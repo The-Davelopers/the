@@ -98,9 +98,11 @@ save_data = {
     "level one complete" : False,
     "level two complete" : False,
     "level three complete" : False,
+    "level four complete" : False,
+    "level five complete" : False,
 }
 
-level_objects = [pygame.image.load("player.png")]
+level_objects = []
 
 the_player = player_values()
 
