@@ -1,5 +1,6 @@
 import pygame, ctypes, os
 
+#i'm tired
 pygame.init()
 
 #*screen setup
