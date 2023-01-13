@@ -105,13 +105,13 @@ save_data = {
 
 level_objects = []
 
-the_player = player_values()
+the_player = player_values((50, 50), (300, 300))
 
 #main hub
 
 #level one
 
-box_level_one = entities()
+box_level_one = entities((100, 100), (400, 400))
 
 animation_counter = 0
 
@@ -170,8 +170,8 @@ while running:
         if "player completes level":
             save_data["level five complete"] = True
     
-    screen.blit(level_objects[0], (500, 500))
+    for image in level_objects:
+        screen.blit(image.surface, image.pos)
     
-    animation_counter += 1
     
     pygame.display.update()
