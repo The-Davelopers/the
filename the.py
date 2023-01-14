@@ -50,7 +50,7 @@ class entities():
             self.surface.fill(color)
             
 class background_load():
-    def __init__(self) -> None:
+    def __init__(self):
         
         self.size = screensize
         
