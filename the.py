@@ -1,7 +1,6 @@
 import pygame, ctypes, os
 
 
-
 pygame.init()
 
 #*screen setup
@@ -11,7 +10,6 @@ screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 screen = pygame.display.set_mode(screensize)
 
 scale = (screensize[0]/1920, screensize[1]/1080)
-
 
 
 #*Classes
@@ -32,8 +30,7 @@ class player_values():
             self.surface = pygame.surface.Surface(size)
             self.surface.fill(color)
             
-        
-        
+              
 class entities():
     def __init__(self, size, position, color=(255, 255, 255), image=None, collision_size=None):
         #scaling 
@@ -105,8 +102,6 @@ def animation(surfaces):
             animation_counter = 0
 
 
-
-
 #*Main variables
 
 active_location = "main hub"
@@ -141,8 +136,6 @@ tree_level_one = entities((12))
 
 while running:
     
-    
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False    
@@ -152,7 +145,6 @@ while running:
         screen.blit(background, (0, 0))
         
 
-    
     if active_location == "main menu":
         background = backgrounds.main_menu
     
