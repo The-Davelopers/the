@@ -1,7 +1,7 @@
 import pygame, ctypes, os
 
-#i'm tired
-#savetheenviroment
+
+
 pygame.init()
 
 #*screen setup
@@ -13,7 +13,6 @@ screen = pygame.display.set_mode(screensize)
 scale = (screensize[0]/1920, screensize[1]/1080)
 
 
-print(scale)
 
 #*Classes
 
@@ -36,7 +35,7 @@ class player_values():
         
         
 class entities():
-    def __init__(self, size, position, color=(255, 255, 255), image=None):
+    def __init__(self, size, position, color=(255, 255, 255), image=None, collision_size=None):
         #scaling 
         size = (size[0] * scale[0], size[1] * scale[1])
         
@@ -69,9 +68,29 @@ class background_load():
         except:
             self.level_one = (0, 128, 0)
         
+        try:
+            self.level_two = pygame.image.load("level_two_background.png")
+        except:
+            self.level_two = (0, 128, 0)
+            
+        try:
+            self.level_three = pygame.image.load("level_three_background.png")
+        except:
+            self.level_three = (0, 128, 0)
+        
+        try:
+            self.level_four = pygame.image.load("level_four_background.png")
+        except:
+            self.level_four = (0, 128, 0)
+            
+        try:
+            self.level_five = pygame.image.load("level_five_background.png")
+        except:
+            self.level_five = (0, 128, 0)
+          
 #*Functions
 
-def player_movement(direction, player_entity, level_entities):
+def player_movement(direction, player_entity, level_entities, scale, keys):
     pass
 
 def animation(surfaces):
@@ -108,16 +127,15 @@ level_objects = []
 
 the_player = player_values((50, 50), (300, 300))
 
+running = True
+
 #main hub
 
 #level one
 
 box_level_one = entities((100, 100), (400, 400))
 
-animation_counter = 0
-
-running = True
-
+tree_level_one = entities((12))
 
 #*Main Loop
 
