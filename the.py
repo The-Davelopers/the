@@ -32,18 +32,37 @@ class player_values():
             
               
 class entities():
-    def __init__(self, size, position, color=(255, 255, 255), image=None, collision_size=None):
+    def __init__(self, size, position, color=(255, 255, 255), image=None, image_size=None):
         #scaling 
         size = (size[0] * scale[0], size[1] * scale[1])
         
         self.pos = (position[0] * scale[0], position[1] * scale[1])
         
+        self.collision = pygame.surface.Surface(size)
+
+        
         try:
             self.surface = pygame.image.load(image)
-            self.surface = pygame.transform.scale(size)
+            self.surface = pygame.transform.scale(image_size)
+            
+            
+            
         except:
-            self.surface = pygame.surface.Surface(size)
-            self.surface.fill(color)
+            self.collision.fill(color)
+            
+            
+        def image_anchoring(entity):
+            #setting an anchor point for the image to the collision box
+            
+            image_position = entity.position[1] - entity.image_size[1] + entity.size[1]
+            
+            return image_position
+            
+            
+        
+        
+        
+        
             
 class background_load():
     def __init__(self):
@@ -128,9 +147,16 @@ running = True
 
 #level one
 
-box_level_one = entities((100, 100), (400, 400))
+box_level_one = entities((200, 200), (1400, 300))
 
-tree_level_one = entities((12))
+track_level_one = entities((100, 600), (1450, 300))
+
+tree_level_one = entities()
+
+bush_level_one = entities()
+
+exit_level_one = entities()
+
 
 #*Main Loop
 
