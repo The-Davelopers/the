@@ -36,20 +36,34 @@ class entities():
         #scaling 
         size = (size[0] * scale[0], size[1] * scale[1])
         
-        self.pos = (position[0] * scale[0], position[1] * scale[1])
+        self.collision_pos = (position[0] * scale[0], position[1] * scale[1])
         
         self.collision = pygame.surface.Surface(size)
-
         
+        self.collision.fill((255, 255, 255))
+        
+        try:    
+            image_size = (image_size[0] * scale[0], image_size[1] * scale[1])
+        except:    
+            image_size = size
+            
         try:
-            self.surface = pygame.image.load(image)
-            self.surface = pygame.transform.scale(image_size)
+            self.pos = (self.collision_pos[0] + size[0]/2 - image_size[0]/2, self.collision_pos[1] + size[1] - image_size[1])
+        except:
+            self.pos = self.collision_pos
+        try:
+            surface = pygame.image.load(image)
             
-            
+            try:
+                self.surface = pygame.transform.scale(surface, image_size)
+            except:
+                self.surface = pygame.transform.scale(surface, size) 
+                print("ok")               
             
         except:
-            self.collision.fill(color)
-            
+            self.surface = pygame.surface.Surface(size)
+            self.surface.fill(color)
+        
             
         def image_anchoring(entity):
             #setting an anchor point for the image to the collision box
@@ -137,7 +151,7 @@ save_data = {
     "level five complete" : False,
 }
 
-level_objects = []
+level_entities = []
 
 the_player = player_values((50, 50), (300, 300))
 
@@ -151,12 +165,13 @@ box_level_one = entities((200, 200), (1400, 300))
 
 track_level_one = entities((100, 600), (1450, 300))
 
-tree_level_one = entities()
+tree_level_one = entities((150, 50), (300, 600), image="images/tree_level_one.png", image_size=(400, 600))
 
-bush_level_one = entities()
+bush_level_one = entities((175, 125), (400, 750), image="images/bush_level_one.png", image_size=(175, 175))
 
-exit_level_one = entities()
+exit_level_one = entities((960, 0), (25, 10))
 
+level_entities = [bush_level_one, tree_level_one]
 
 #*Main Loop
 
@@ -207,8 +222,17 @@ while running:
         if "player completes level":
             save_data["level five complete"] = True
     
-    for image in level_objects:
-        screen.blit(image.surface, image.pos)
     
+
+    for entity in level_entities:
+        screen.blit(entity.surface, entity.pos)
+    
+    
+
+    keys = pygame.key.get_pressed()
+        
+    if keys[pygame.K_b]:
+        for box in level_entities:
+            screen.blit(box.collision, box.collision_pos)
     
     pygame.display.update()
