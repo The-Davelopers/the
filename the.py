@@ -52,7 +52,7 @@ class entities():
         except:
             self.pos = self.collision_pos
         try:
-            surface = pygame.image.load(image)
+            surface = pygame.image.load(f"images/{image}")
             
             try:
                 self.surface = pygame.transform.scale(surface, image_size)
@@ -163,15 +163,15 @@ running = True
 
 box_level_one = entities((200, 200), (1400, 300))
 
-track_level_one = entities((100, 600), (1450, 300))
+track_level_one = entities((0, 0), (1550, 900), image="track_one.png", image_size=(100, 600))
 
-tree_level_one = entities((150, 50), (300, 600), image="images/tree_level_one.png", image_size=(400, 600))
+tree_level_one = entities((150, 50), (300, 600), image="tree_level_one.png", image_size=(400, 600))
 
-bush_level_one = entities((175, 125), (400, 750), image="images/bush_level_one.png", image_size=(175, 175))
+bush_level_one = entities((175, 125), (400, 750), image="bush_level_one.png", image_size=(175, 175))
 
 exit_level_one = entities((960, 0), (25, 10))
 
-level_entities = [bush_level_one, tree_level_one]
+level_entities = [bush_level_one, tree_level_one, track_level_one]
 
 #*Main Loop
 
