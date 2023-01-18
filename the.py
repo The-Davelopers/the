@@ -169,11 +169,7 @@ def player_movement(direction, player_entity, level_entities):
     
     if "down" in direction:
         y_change = 1
-        
-    
-    
-    
-    
+            
     x += 2*x_change 
     y += 2*y_change
     
@@ -229,8 +225,6 @@ button_play = buttons("images/button_play.png", (360, 120), (780, 450), (960, 51
 button_options = buttons("images/button_options.png", (360, 120), (780, 600), (960, 660))
 button_quit = buttons("images/button_quit.png", (360, 120), (780, 750), (960, 810))
 
-pressed_button_play = buttons("images/pressed_button_play.png", (360, 120), (780, 450), (960, 510))
-
 save_1_button = buttons("images/save_1.png", (360, 120), (780, 250), (960, 310))
 save_2_button = buttons("images/save_2.png", (360, 120), (780, 400), (960, 460))
 save_3_button = buttons("images/save_3.png", (360, 120), (780, 550), (960, 610))
@@ -238,18 +232,12 @@ save_4_button = buttons("images/save_4.png", (360, 120), (780, 700), (960, 760))
 
 back_button = buttons("images/back_button.png", (150, 150), (200, 120), (275, 195))
 
-text_in_options = "Lol No Options For you"
+""" text_in_options = "Lol No Options For you"
 game_version = "0.0.0"
 font = pygame.font.Font("fonts/minkraft.ttf", 22)
 text_color = (255, 255, 255)
 text_game_version = font.render(f"{game_version}", True, text_color)
-text_options = font.render(f"{text_in_options}", True, text_color)
-
-bgi = pygame.image.load("images/undah_da_sea.jpg").convert_alpha()
-icon = pygame.image.load("images/icon.png").convert_alpha()
-
-icon = pygame.transform.scale(icon, (970, 500))
-
+text_options = font.render(f"{text_in_options}", True, text_color) """
 
 #main hub
 
