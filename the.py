@@ -72,12 +72,36 @@ class entities():
             
             return image_position
             
-            
+class buttons():
+    def __init__(self, image, size, position, hitbox):
+
+        button = pygame.image.load(image).convert_alpha()
+        self.button = pygame.transform.scale(button, size)
+        self.pos = position
+        self.hit = hitbox
+        self.outline = pygame.transform.scale(button,((size[0] + 18), (size[1] + 13)))
+        self.outline_pos = ((position[0] - 9), (position[1] - 7))
+
+    def button_click(mouse_pos, button_id, mouse_button_pressed, button_index):
+        if mouse_button_pressed[0]:
+            click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+            if click_rect.collidepoint(mouse_pos):
+                ms = button_index
+                return ms
+
+    def button_function(mouse_pos, button_id, mouse_button_pressed, tru):
+        if mouse_button_pressed[0]:
+            click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+            if click_rect.collidepoint(mouse_pos):
+                truu = tru
+                return truu
+
+def button_interact(mouse_pos,buttox):
+        click_rect = pygame.Rect(buttox.button.get_rect(center=(buttox.hit)))
+        if click_rect.collidepoint(mouse_pos):
+            screen.blit(buttox.outline, buttox.outline_pos)                   
         
-        
-        
-        
-            
+           
 class background_load():
     def __init__(self):
         
@@ -156,6 +180,34 @@ level_entities = []
 the_player = player_values((50, 50), (300, 300))
 
 running = True
+
+#main menu
+
+button_play = buttons(r"images\button_play.png", (360, 120), (780, 450), (960, 510))
+button_options = buttons(r"images\button_options.png", (360, 120), (780, 600), (960, 660))
+button_quit = buttons(r"images\button_quit.png", (360, 120), (780, 750), (960, 810))
+
+pressed_button_play = buttons(r"images\pressed_button_play.png", (360, 120), (780, 450), (960, 510))
+
+save_1_button = buttons(r"images\save_1.png", (360, 120), (780, 250), (960, 310))
+save_2_button = buttons(r"images\save_2.png", (360, 120), (780, 400), (960, 460))
+save_3_button = buttons(r"images\save_3.png", (360, 120), (780, 550), (960, 610))
+save_4_button = buttons(r"images\save_4.png", (360, 120), (780, 700), (960, 760))
+
+back_button = buttons(r"images\back_button.png", (150, 150), (200, 120), (275, 195))
+
+text_in_options = "Lol No Options For you"
+game_version = "0.0.0"
+font = pygame.font.Font(r"fonts\minkraft.ttf", 22)
+text_color = (255, 255, 255)
+text_game_version = font.render(f"{game_version}", True, text_color)
+text_options = font.render(f"{text_in_options}", True, text_color)
+
+bgi = pygame.image.load(r"images\undah_da_sea.jpg").convert_alpha()
+icon = pygame.image.load(r"images\icon.png").convert_alpha()
+
+icon = pygame.transform.scale(icon, (970, 500))
+
 
 #main hub
 
