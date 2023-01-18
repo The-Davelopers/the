@@ -1,4 +1,4 @@
-import pygame, ctypes, os
+import pygame, ctypes, os, pickle
 
 
 pygame.init()
@@ -24,17 +24,21 @@ class player_values():
         self.speed = speed
         
         try:
-            self.surface = pygame.image.load(image)
-            self.surface = pygame.transform.scale(size)
+            surface = pygame.image.load(f"images/{image}")
+            self.surface = pygame.transform.scale(surface, size)
         except:
             self.surface = pygame.surface.Surface(size)
             self.surface.fill(color)
-            
               
 class entities():
-    def __init__(self, size, position, color=(255, 255, 255), image=None, image_size=None):
+    def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None):
         #scaling 
+        self.counter = 0
+        
         size = (size[0] * scale[0], size[1] * scale[1])
+        
+        self.surfaces = []
+        
         
         self.collision_pos = (position[0] * scale[0], position[1] * scale[1])
         
@@ -52,32 +56,31 @@ class entities():
         except:
             self.pos = self.collision_pos
         try:
-            surface = pygame.image.load(f"images/{image}")
+            for image in images:
+                surface = pygame.image.load(f"images/{image}")
+                try:
+                    surface = pygame.transform.scale(surface, image_size)
+                except:
+                    surface = pygame.transform.scale(surface, size)         
             
-            try:
-                self.surface = pygame.transform.scale(surface, image_size)
-            except:
-                self.surface = pygame.transform.scale(surface, size) 
-                print("ok")               
-            
+                self.surfaces.append(surface)
         except:
-            self.surface = pygame.surface.Surface(size)
-            self.surface.fill(color)
+            surface = pygame.surface.Surface(size)
+            surface.fill(color)
+            self.surfaces.append(surface)
+            
+        self.surface = self.surfaces[0]
         
             
         def image_anchoring(entity):
             #setting an anchor point for the image to the collision box
             
-            image_position = entity.position[1] - entity.image_size[1] + entity.size[1]
+            image_position = (self.collision_pos[0] + size[0]/2 - image_size[0]/2, self.collision_pos[1] + size[1] - image_size[1])
             
             return image_position
             
             
-        
-        
-        
-        
-            
+   
 class background_load():
     def __init__(self):
         
@@ -120,19 +123,54 @@ class background_load():
           
 #*Functions
 
-def player_movement(direction, player_entity, level_entities, scale, keys):
+def player_movement(direction, player_entity, level_entities):
+    
+    x_change = 0
+    y_change = 0
+    
+    x, y = player_entity.pos
+
+    if "left" in direction:
+        x_change = -1
+        
+    if "right" in direction:
+        x_change = 1
+    
+    if "up" in direction:
+        y_change = -1
+    
+    if "down" in direction:
+        y_change = 1
+        
+    
+    
+    
+    
+    x += 2*x_change 
+    y += 2*y_change
+    
+    player_entity.pos = (x, y)
+    print(player_entity.pos)
+    
+    return player_entity, level_entities    
+    
+
+def file_saving():
     pass
 
-def animation(surfaces):
+def animation(entity):
     
-    for i, frame in enumerate(surfaces):
+    #surfaces = os.listdir(f"images/{path}")
+    
+    for i, frame in enumerate(entity.surfaces):
                 
-        if animation_counter > (i)*10:
-            level_objects = [frame]
-            print(frame)
-            
-        if animation_counter > len(surfaces)*10:
-            animation_counter = 0
+        if entity.counter > (i)*10:
+            entity.surface = frame
+            print(entity.surface)
+        if entity.counter > len(entity.surfaces)*10:
+            entity.counter = 0
+    
+    return entity
 
 
 #*Main variables
@@ -153,7 +191,7 @@ save_data = {
 
 level_entities = []
 
-the_player = player_values((50, 50), (300, 300))
+the_player = player_values((50, 100), (300, 300), image="amogus_idle_1.png")
 
 running = True
 
@@ -161,17 +199,18 @@ running = True
 
 #level one
 
-box_level_one = entities((200, 200), (1400, 300))
 
-track_level_one = entities((0, 0), (1550, 900), image="track_one.png", image_size=(100, 600))
+box_level_one = entities((200, 200), (1400, 300), images=os.listdir("images/amogus/"))
 
-tree_level_one = entities((150, 50), (300, 600), image="tree_level_one.png", image_size=(400, 600))
+track_level_one = entities((0, 0), (1550, 900), images=["track_one.png"], image_size=(100, 600))
 
-bush_level_one = entities((175, 125), (400, 750), image="bush_level_one.png", image_size=(175, 175))
+tree_level_one = entities((150, 50), (300, 600), images=["tree_level_one.png"], image_size=(400, 600))
+
+bush_level_one = entities((175, 125), (400, 750), images=["bush_level_one.png"], image_size=(175, 175))
 
 exit_level_one = entities((960, 0), (25, 10))
 
-level_entities = [bush_level_one, tree_level_one, track_level_one]
+level_entities = [track_level_one, bush_level_one, tree_level_one, box_level_one]
 
 #*Main Loop
 
@@ -222,15 +261,27 @@ while running:
         if "player completes level":
             save_data["level five complete"] = True
     
-    
 
     for entity in level_entities:
+        animation(entity)
         screen.blit(entity.surface, entity.pos)
     
-    
-
     keys = pygame.key.get_pressed()
         
+        
+    if keys[pygame.K_a]:
+        the_player, level_entities = player_movement("left", the_player, level_entities)
+    
+    if keys[pygame.K_d]:
+        the_player, level_entities = player_movement("right", the_player, level_entities)    
+
+    if keys[pygame.K_w]:
+        the_player, level_entities = player_movement("up", the_player, level_entities)    
+    
+    if keys[pygame.K_s]:
+        the_player, level_entities = player_movement("down", the_player, level_entities)    
+        
+
     if keys[pygame.K_b]:
         for box in level_entities:
             screen.blit(box.collision, box.collision_pos)
