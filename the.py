@@ -82,6 +82,11 @@ class entities():
 class buttons():
     def __init__(self, image, size, position, hitbox):
 
+
+        """ size = (size[0] * scale[0], size[1] * scale[1])
+        position = (position[0] * scale[0], position[1] * scale[1])
+        hitbox = (hitbox[0] * scale[0], hitbox[1] * scale[1]) """
+
         button = pygame.image.load(image).convert_alpha()
         self.button = pygame.transform.scale(button, size)
         self.pos = position
@@ -103,12 +108,7 @@ class buttons():
                 truu = tru
                 return truu
 
-def button_interact(mouse_pos,buttox):
-        click_rect = pygame.Rect(buttox.button.get_rect(center=(buttox.hit)))
-        if click_rect.collidepoint(mouse_pos):
-            screen.blit(buttox.outline, buttox.outline_pos)            
-        
-      
+
 class background_load():
     def __init__(self):
         
@@ -150,6 +150,11 @@ class background_load():
             self.level_five = (0, 128, 0)
           
 #*Functions
+
+def button_interact(mouse_pos,buttox):
+        click_rect = pygame.Rect(buttox.button.get_rect(center=(buttox.hit)))
+        if click_rect.collidepoint(mouse_pos):
+            screen.blit(buttox.outline, buttox.outline_pos)            
 
 def player_movement(direction, player_entity, level_entities):
     
@@ -199,7 +204,7 @@ def animation(entity):
 
 #*Main variables
 
-active_location = "main hub"
+active_location = "main menu"
 
 backgrounds = background_load()
 
@@ -232,6 +237,7 @@ save_4_button = buttons("images/save_4.png", (360, 120), (780, 700), (960, 760))
 
 back_button = buttons("images/back_button.png", (150, 150), (200, 120), (275, 195))
 
+menu_screen = 1
 """ text_in_options = "Lol No Options For you"
 game_version = "0.0.0"
 font = pygame.font.Font("fonts/minkraft.ttf", 22)
@@ -254,7 +260,7 @@ bush_level_one = entities((175, 125), (400, 750), images=["bush_level_one.png"],
 
 exit_level_one = entities((960, 0), (25, 10))
 
-level_entities = [track_level_one, bush_level_one, tree_level_one, box_level_one]
+level_entities = []
 
 #*Main Loop
 
@@ -286,8 +292,6 @@ while running:
         elif menu_screen == 3:
 
             button_list = [back_button]
-            
-            screen.blit(text_options, (815, 500))
 
         for event in pygame.event.get():
 
@@ -315,12 +319,15 @@ while running:
 
                 if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed, True):
                     menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
-                    
-                for button in button_list:
-                    button_interact((mouse_x, mouse_y), button)
+
+        for button in button_list:
+            screen.blit(button.button, button.pos)
+            button_interact((mouse_x, mouse_y), button)
     
     if active_location == "main hub":
-        background = backgrounds.main_hub            
+        background = backgrounds.main_hub
+
+        level_entities = [track_level_one, bush_level_one, tree_level_one, box_level_one]         
             
     if active_location == "level one":
         background = backgrounds.level_one
