@@ -283,6 +283,53 @@ while running:
 
     if active_location == "main menu":
         background = backgrounds.main_menu
+
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        if menu_screen == 1:
+
+            button_list = [button_play, button_options, button_quit]
+            
+        elif menu_screen == 2:
+
+            button_list = [save_1_button, save_2_button, save_3_button, save_4_button, back_button]
+
+
+        elif menu_screen == 3:
+
+            button_list = [back_button]
+            
+            screen.blit(text_options, (815, 500))
+
+        for event in pygame.event.get():
+
+            mouse_button_pressed = pygame.mouse.get_pressed()       
+
+            if menu_screen == 1:
+
+                if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed, True):
+
+                    menu_screen = buttons.button_click((mouse_x, mouse_y), button_play, mouse_button_pressed, 2)
+
+                elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed, True):
+
+                    menu_screen = buttons.button_click((mouse_x, mouse_y), button_options, mouse_button_pressed, 3)
+
+                elif buttons.button_function((mouse_x, mouse_y), button_quit, mouse_button_pressed, True):
+                    pygame.quit()
+                
+            elif menu_screen == 2:
+
+                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed, True):
+                    menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
+
+            elif menu_screen == 3:
+
+                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed, True):
+                    menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
+                    
+                for button in button_list:
+                    button_interact((mouse_x, mouse_y), button)
     
     if active_location == "main hub":
         background = backgrounds.main_hub            
