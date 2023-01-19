@@ -5,6 +5,7 @@ pygame.init()
 
 #*screen setup
 
+ctypes.windll.user32.SetProcessDPIAware()
 user32 = ctypes.windll.user32
 screensize = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 screen = pygame.display.set_mode(screensize)
