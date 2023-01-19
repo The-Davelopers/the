@@ -83,16 +83,16 @@ class buttons():
     def __init__(self, image, size, position, hitbox):
 
 
-        """ size = (size[0] * scale[0], size[1] * scale[1])
+        size = (size[0] * scale[0], size[1] * scale[1])
         position = (position[0] * scale[0], position[1] * scale[1])
-        hitbox = (hitbox[0] * scale[0], hitbox[1] * scale[1]) """
+        hitbox = (hitbox[0] * scale[0], hitbox[1] * scale[1])
 
         button = pygame.image.load(image).convert_alpha()
         self.button = pygame.transform.scale(button, size)
         self.pos = position
         self.hit = hitbox
-        self.outline = pygame.transform.scale(button,((size[0] + 18), (size[1] + 13)))
-        self.outline_pos = ((position[0] - 9), (position[1] - 7))
+        self.outline = pygame.transform.scale(button,((size[0] + 18*scale[0]), (size[1] + 13*scale[1])))
+        self.outline_pos = ((position[0] - 9*scale[0]), (position[1] - 7*scale[1]))
 
     def button_click(mouse_pos, button_id, mouse_button_pressed, button_index):
         if mouse_button_pressed[0]:
@@ -101,12 +101,11 @@ class buttons():
                 ms = button_index
                 return ms
 
-    def button_function(mouse_pos, button_id, mouse_button_pressed, tru):
+    def button_function(mouse_pos, button_id, mouse_button_pressed):
         if mouse_button_pressed[0]:
             click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
             if click_rect.collidepoint(mouse_pos):
-                truu = tru
-                return truu
+                return True
 
 
 class background_load():
@@ -266,6 +265,8 @@ level_entities = []
 
 while running:
     
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False    
@@ -278,7 +279,7 @@ while running:
     if active_location == "main menu":
         background = backgrounds.main_menu
 
-        mouse_x, mouse_y = pygame.mouse.get_pos()
+        
 
         if menu_screen == 1:
 
@@ -299,25 +300,25 @@ while running:
 
             if menu_screen == 1:
 
-                if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed, True):
+                if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed):
 
                     menu_screen = buttons.button_click((mouse_x, mouse_y), button_play, mouse_button_pressed, 2)
 
-                elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed, True):
+                elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed):
 
                     menu_screen = buttons.button_click((mouse_x, mouse_y), button_options, mouse_button_pressed, 3)
 
-                elif buttons.button_function((mouse_x, mouse_y), button_quit, mouse_button_pressed, True):
+                elif buttons.button_function((mouse_x, mouse_y), button_quit, mouse_button_pressed):
                     pygame.quit()
                 
             elif menu_screen == 2:
 
-                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed, True):
+                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
                     menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
 
             elif menu_screen == 3:
 
-                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed, True):
+                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
                     menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
 
         for button in button_list:
