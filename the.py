@@ -34,12 +34,11 @@ class player_values():
 class entities():
     def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None):
         #scaling 
-        self.counter = 0
-        
+  
         size = (size[0] * scale[0], size[1] * scale[1])
         
         self.surfaces = []
-        
+      
         
         self.collision_pos = (position[0] * scale[0], position[1] * scale[1])
         
@@ -107,7 +106,47 @@ class buttons():
             click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
             if click_rect.collidepoint(mouse_pos):
                 return True
+            
+class animator(pygame.sprite.Sprite):
+    def __init__(self, images, pos_x, pos_y):
+        super().__init__()
+        self.x = pos_x
+        self.y = pos_y
 
+        self.image_group = images
+        self.current_image = 0
+        self.image = self.image_group[self.current_image]
+
+        self.rect = self.image.get_rect()
+        self.rect.center = [self.x, self.y]
+    
+        self.speed = 0
+        self.animation_started = False
+
+    def start_animation(self, speed):
+        self.animation_started = True
+        self.speed = speed
+        
+    def animate(self):
+        if self.animation_started:
+            self.current_image += self.speed   
+        
+        if self.current_image >= len(self.image_group):
+                self.current_image = 0
+                self.animation_started = False
+    
+        self.image = self.image_group[int(self.current_image)]
+        self.rect.topright = [self.x, self.y]
+
+    def update(self, speed):
+        self.speed = speed
+        self.current_image += self.speed   
+        
+        if self.current_image >= len(self.image_group):
+                self.current_image = 0
+    
+        self.image = self.image_group[int(self.current_image)]
+        self.rect.topright = [self.x, self.y]
 
 class background_load():
     def __init__(self):
@@ -183,24 +222,16 @@ def player_movement(direction, player_entity, level_entities):
     
     return player_entity, level_entities    
     
+    def new_image_set(picture_amount, path_name, name_, format):
+        new_image_group = []
+        for i in range (0, picture_amount):
+            new_image_group.append(
+                pygame.image.load(os.path.join(path_name, name_ + str(i) + format))
+            )
+        return new_image_group  
 
 def file_saving():
     pass
-
-def animation(entity):
-    
-    #surfaces = os.listdir(f"images/{path}")
-    
-    for i, frame in enumerate(entity.surfaces):
-                
-        if entity.counter > (i)*10:
-            entity.surface = frame
-            print(entity.surface)
-        if entity.counter > len(entity.surfaces)*10:
-            entity.counter = 0
-    
-    return entity
-
 
 #*Main variables
 
