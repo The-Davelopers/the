@@ -393,10 +393,6 @@ while running:
             save_data["level five complete"] = True
     
 
-    for entity in level_entities:
-        animation(entity)
-        screen.blit(entity.surface, entity.pos)
-    
     keys = pygame.key.get_pressed()
         
         
