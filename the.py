@@ -81,8 +81,7 @@ class entities():
             
 class buttons():
     def __init__(self, image, size, position, hitbox):
-
-
+        
         size = (size[0] * scale[0], size[1] * scale[1])
         position = (position[0] * scale[0], position[1] * scale[1])
         hitbox = (hitbox[0] * scale[0], hitbox[1] * scale[1])
