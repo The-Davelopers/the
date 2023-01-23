@@ -257,7 +257,8 @@ running = True
 
 #main menu
 
-button_play = buttons("images/button_play.png", (360, 120), (780, 450), (960, 510))
+button_play = entities((960, 510), (780, 450), images=["button_play.png"], image_size=(360, 120))
+
 button_options = buttons("images/button_options.png", (360, 120), (780, 600), (960, 660))
 button_quit = buttons("images/button_quit.png", (360, 120), (780, 750), (960, 810))
 
