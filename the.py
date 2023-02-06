@@ -30,7 +30,9 @@ class player_values():
         except:
             self.surface = pygame.surface.Surface(size)
             self.surface.fill(color)
-              
+        
+        print(self.surface)
+        
 class entities():
     def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None):
         #scaling 
@@ -86,7 +88,7 @@ class buttons():
         position = (position[0] * scale[0], position[1] * scale[1])
         hitbox = (hitbox[0] * scale[0], hitbox[1] * scale[1])
 
-        button = pygame.image.load(image).convert_alpha()
+        button = pygame.image.load(f"images/{image}").convert_alpha()
         self.button = pygame.transform.scale(button, size)
         self.pos = position
         self.hit = hitbox
@@ -103,7 +105,12 @@ class buttons():
     def button_function(mouse_pos, button_id, mouse_button_pressed):
         if mouse_button_pressed[0]:
             click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+            print(click_rect)
             if click_rect.collidepoint(mouse_pos):
+                
+                
+                
+                print(mouse_pos)
                 return True
             
 class animator(pygame.sprite.Sprite):
@@ -153,37 +160,45 @@ class background_load():
         self.size = screensize
         
         try:
-            self.main_menu = pygame.image.load("main_menu_background.png")
+            main_menu = pygame.image.load("images/main_menu_background.png")
+            self.main_menu = pygame.transform.scale(main_menu, (screensize))
         except:
             self.main_menu = (0, 128, 0)
             
         try:
-            self.main_hub = pygame.image.load("main_hub_background.png")
+            main_hub = pygame.image.load("images/main_hub_background.png")
+            self.main_hub = pygame.transform.scale(main_hub, (screensize))
+            print("clear")
         except:
             self.main_hub = (0, 128, 0)
             
         try:
-            self.level_one = pygame.image.load("level_one_background.png")
+            level_one = pygame.image.load("images/level_one_background.png")
+            self.level_one = pygame.transform.scale(level_one, (screensize))
         except:
             self.level_one = (0, 128, 0)
         
         try:
-            self.level_two = pygame.image.load("level_two_background.png")
+            level_two = pygame.image.load("images/level_two_background.png")
+            self.level_two = pygame.transform.scale(level_two, (screensize))
         except:
             self.level_two = (0, 128, 0)
             
         try:
-            self.level_three = pygame.image.load("level_three_background.png")
+            level_three = pygame.image.load("images/level_three_background.png")
+            self.level_three = pygame.transform.scale(level_three, (screensize))
         except:
             self.level_three = (0, 128, 0)
         
         try:
-            self.level_four = pygame.image.load("level_four_background.png")
+            level_four = pygame.image.load("images/level_four_background.png")
+            self.level_four = pygame.transform.scale(level_four, (screensize))
         except:
             self.level_four = (0, 128, 0)
             
         try:
-            self.level_five = pygame.image.load("level_five_background.png")
+            level_five = pygame.image.load("images/level_five_background.png")
+            self.level_five = pygame.transform.scale(level_five, (screensize))
         except:
             self.level_five = (0, 128, 0)
           
@@ -217,7 +232,6 @@ def player_movement(direction, player_entity, level_entities):
     y += 2*y_change
     
     player_entity.pos = (x, y)
-    print(player_entity.pos)
     
     return player_entity, level_entities    
     
@@ -234,7 +248,7 @@ def file_saving():
 
 #*Main variables
 
-active_location = "main menu"
+active_location = "main hub"
 
 backgrounds = background_load()
 
@@ -256,19 +270,22 @@ running = True
 
 #main menu
 
-button_play = entities((960, 510), (780, 450), images=["button_play.png"], image_size=(360, 120))
+#button_play = entities((960, 510), (780, 450), images=["button_play.png"], image_size=(360, 120))
 
-button_options = buttons("images/button_options.png", (360, 120), (780, 600), (960, 660))
-button_quit = buttons("images/button_quit.png", (360, 120), (780, 750), (960, 810))
+button_play = buttons("button_play.png", (360, 120), (780, 450), (960, 510))
 
-save_1_button = buttons("images/save_1.png", (360, 120), (780, 250), (960, 310))
-save_2_button = buttons("images/save_2.png", (360, 120), (780, 400), (960, 460))
-save_3_button = buttons("images/save_3.png", (360, 120), (780, 550), (960, 610))
-save_4_button = buttons("images/save_4.png", (360, 120), (780, 700), (960, 760))
+button_options = buttons("button_options.png", (360, 120), (780, 600), (960, 660))
+button_quit = buttons("button_quit.png", (360, 120), (780, 750), (960, 810))
 
-back_button = buttons("images/back_button.png", (150, 150), (200, 120), (275, 195))
+save_1_button = buttons("save_1.png", (360, 120), (780, 250), (960, 310))
+save_2_button = buttons("save_2.png", (360, 120), (780, 400), (960, 460))
+save_3_button = buttons("save_3.png", (360, 120), (780, 550), (960, 610))
+save_4_button = buttons("save_4.png", (360, 120), (780, 700), (960, 760))
+
+back_button = buttons("back_button.png", (150, 150), (200, 120), (275, 195))
 
 menu_screen = 1
+
 """ text_in_options = "Lol No Options For you"
 game_version = "0.0.0"
 font = pygame.font.Font("fonts/minkraft.ttf", 22)
@@ -301,7 +318,8 @@ while running:
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False    
+            running = False
+             
     try:
         screen.fill(background)
     except:
@@ -333,9 +351,9 @@ while running:
             if menu_screen == 1:
 
                 if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed):
-
+                    
                     menu_screen = buttons.button_click((mouse_x, mouse_y), button_play, mouse_button_pressed, 2)
-
+                    #print(mouse_x, mouse_y)
                 elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed):
 
                     menu_screen = buttons.button_click((mouse_x, mouse_y), button_options, mouse_button_pressed, 3)
@@ -360,11 +378,14 @@ while running:
     if active_location == "main hub":
         background = backgrounds.main_hub
 
-        level_entities = [track_level_one, bush_level_one, tree_level_one, box_level_one]         
+        level_entities = [the_player]
+                 
             
     if active_location == "level one":
         background = backgrounds.level_one
-    
+        
+        level_entities = [track_level_one, bush_level_one, tree_level_one, box_level_one]
+        
         if "player completes level":
             save_data["level one complete"] = True
     
@@ -408,9 +429,19 @@ while running:
     if keys[pygame.K_s]:
         the_player, level_entities = player_movement("down", the_player, level_entities)    
         
-
+    for entity in level_entities:
+        screen.blit(entity.surface, entity.pos)
+    
     if keys[pygame.K_b]:
         for box in level_entities:
-            screen.blit(box.collision, box.collision_pos)
+            try:
+                screen.blit(box.collision, box.collision_pos)
+            except:
+                pass
+    
+    #surface = pygame.surface.Surface(button_play.button.get_size())
+    #surface.fill((255, 255, 255))
+    
+    #screen.blit(surface, (button_play.hit[0]- surface.get_size()[0]/2, button_play.hit[1]- surface.get_size()[1]/2))
     
     pygame.display.update()
