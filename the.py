@@ -1,5 +1,10 @@
 import pygame, ctypes, os, pickle
 
+try:
+    import moviepy.editor
+except:
+    os.system("pip install moviepy")
+
 
 pygame.init()
 
@@ -13,43 +18,51 @@ screen = pygame.display.set_mode(screensize)
 scale = (screensize[0]/1920, screensize[1]/1080)
 
 
+
+
+
+
 #*Classes
 
 class player_values():
     def __init__(self, size, position,color=(255, 255, 255), image=None, speed=2):
         #scaling
+        
+        
+
         self.pos = (position[0] * scale[0], position[1] * scale[1])
         
         size = (size[0] * scale[0], size[1] * scale[1])
         
+        self.size = size
         self.speed = speed
         
         try:
-            surface = pygame.image.load(f"images/{image}")
+            surface = pygame.image.load(f"images/{image}").convert_alpha()
             self.surface = pygame.transform.scale(surface, size)
         except:
             self.surface = pygame.surface.Surface(size)
             self.surface.fill(color)
         
-        print(self.surface)
+        #print(self.surface)
         
 class entities():
     def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None):
         #scaling 
   
-        size = (size[0] * scale[0], size[1] * scale[1])
+        size = (size[0], size[1])
         
         self.surfaces = []
       
         
-        self.collision_pos = (position[0] * scale[0], position[1] * scale[1])
+        self.collision_pos = (position[0], position[1])
         
         self.collision = pygame.surface.Surface(size)
         
         self.collision.fill((255, 255, 255))
         
         try:    
-            image_size = (image_size[0] * scale[0], image_size[1] * scale[1])
+            image_size = (image_size[0], image_size[1])
         except:    
             image_size = size
             
@@ -59,7 +72,7 @@ class entities():
             self.pos = self.collision_pos
         try:
             for image in images:
-                surface = pygame.image.load(f"images/{image}")
+                surface = pygame.image.load(f"images/{image}").convert_alpha()
                 try:
                     surface = pygame.transform.scale(surface, image_size)
                 except:
@@ -84,33 +97,40 @@ class entities():
 class buttons():
     def __init__(self, image, size, position, hitbox):
         
-        size = (size[0] * scale[0], size[1] * scale[1])
-        position = (position[0] * scale[0], position[1] * scale[1])
-        hitbox = (hitbox[0] * scale[0], hitbox[1] * scale[1])
-
+        size = (size[0], size[1])
+        position = (position[0], position[1])
+        hitbox = (hitbox[0], hitbox[1])
+        self.name = image
         button = pygame.image.load(f"images/{image}").convert_alpha()
         self.button = pygame.transform.scale(button, size)
+
         self.pos = position
         self.hit = hitbox
-        self.outline = pygame.transform.scale(button,((size[0] + 18*scale[0]), (size[1] + 13*scale[1])))
+        self.outline = self.button
+        self.outline_pos = position
+        self.outline = pygame.transform.scale(button,((size[0] + 18), (size[1] + 13)))
+        self.outline_size = (size[0] + 18), (size[1] + 13)
         self.outline_pos = ((position[0] - 9*scale[0]), (position[1] - 7*scale[1]))
 
     def button_click(mouse_pos, button_id, mouse_button_pressed, button_index):
         if mouse_button_pressed[0]:
-            click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+            #click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+            click_rect = pygame.rect.Rect((button_id.pos), (button_id.outline_size))
             if click_rect.collidepoint(mouse_pos):
                 ms = button_index
                 return ms
 
     def button_function(mouse_pos, button_id, mouse_button_pressed):
+        click_rect = pygame.rect.Rect((button_id.pos), (button_id.outline_size))
+        #print(click_rect, mouse_pos, button_id.name)
+        #print(click_rect.collidepoint(mouse_pos))    
         if mouse_button_pressed[0]:
-            click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
-            print(click_rect)
+            #click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+            click_rect = pygame.rect.Rect((button_id.pos), (button_id.outline_size))
+            #print(click_rect, mouse_pos)
+            #print(click_rect.collidepoint(mouse_pos))
             if click_rect.collidepoint(mouse_pos):
-                
-                
-                
-                print(mouse_pos)
+
                 return True
             
 class animator(pygame.sprite.Sprite):
@@ -160,62 +180,60 @@ class background_load():
         self.size = screensize
         
         try:
-            main_menu = pygame.image.load("images/main_menu_background.png")
+            main_menu = pygame.image.load("images/main_menu_background.png").convert()
             self.main_menu = pygame.transform.scale(main_menu, (screensize))
         except:
             self.main_menu = (0, 128, 0)
             
         try:
-            main_hub = pygame.image.load("images/main_hub_background.png")
+            main_hub = pygame.image.load("images/main_hub_background.png").convert()
             self.main_hub = pygame.transform.scale(main_hub, (screensize))
-            print("clear")
+            #print("clear")
         except:
             self.main_hub = (0, 128, 0)
             
         try:
-            level_one = pygame.image.load("images/level_one_background.png")
+            level_one = pygame.image.load("images/level_one_background.png").convert()
             self.level_one = pygame.transform.scale(level_one, (screensize))
         except:
             self.level_one = (0, 128, 0)
         
         try:
-            level_two = pygame.image.load("images/level_two_background.png")
+            level_two = pygame.image.load("images/level_two_background.png").convert()
             self.level_two = pygame.transform.scale(level_two, (screensize))
         except:
             self.level_two = (0, 128, 0)
             
         try:
-            level_three = pygame.image.load("images/level_three_background.png")
+            level_three = pygame.image.load("images/level_three_background.png").convert()
             self.level_three = pygame.transform.scale(level_three, (screensize))
         except:
             self.level_three = (0, 128, 0)
         
         try:
-            level_four = pygame.image.load("images/level_four_background.png")
+            level_four = pygame.image.load("images/level_four_background.png").convert()
             self.level_four = pygame.transform.scale(level_four, (screensize))
         except:
             self.level_four = (0, 128, 0)
             
         try:
-            level_five = pygame.image.load("images/level_five_background.png")
+            level_five = pygame.image.load("images/level_five_background.png").convert()
             self.level_five = pygame.transform.scale(level_five, (screensize))
         except:
             self.level_five = (0, 128, 0)
           
 #*Functions
 
-def button_interact(mouse_pos,buttox):
+def button_interact(mouse_pos, buttox):
         click_rect = pygame.Rect(buttox.button.get_rect(center=(buttox.hit)))
         if click_rect.collidepoint(mouse_pos):
             screen.blit(buttox.outline, buttox.outline_pos)            
 
 def player_movement(direction, player_entity, level_entities):
-    
+    global screensize
     x_change = 0
     y_change = 0
     
-    x, y = player_entity.pos
-
     if "left" in direction:
         x_change = -1
         
@@ -227,6 +245,27 @@ def player_movement(direction, player_entity, level_entities):
     
     if "down" in direction:
         y_change = 1
+    x, y = player_entity.pos
+
+    
+    size = player_entity.size
+
+    right_edge = x + size[0]
+    down_edge = y + size[1]
+    
+    if x <= 2 and x_change == -1:
+        x_change = 0
+        
+    if right_edge >= screensize[0] - 2 and x_change == 1:
+        x_change = 0
+        
+    if y <= 2 and y_change == -1:
+        y_change = 0
+        
+    if down_edge >= screensize[1] - 2 and y_change == 1:
+        y_change = 0
+    
+    
             
     x += 2*x_change 
     y += 2*y_change
@@ -241,16 +280,18 @@ def player_movement(direction, player_entity, level_entities):
             new_image_group.append(
                 pygame.image.load(os.path.join(path_name, name_ + str(i) + format))
             )
-        return new_image_group  
+        return new_image_group
 
 def file_saving():
     pass
 
 #*Main variables
 
-active_location = "main hub"
+active_location = "main menu"
 
 backgrounds = background_load()
+
+
 
 background = backgrounds.main_hub
 
@@ -265,6 +306,7 @@ save_data = {
 level_entities = []
 
 the_player = player_values((50, 100), (300, 300), image="amogus_idle_1.png")
+
 
 running = True
 
@@ -286,6 +328,8 @@ back_button = buttons("back_button.png", (150, 150), (200, 120), (275, 195))
 
 menu_screen = 1
 
+opening_cutscene = moviepy.editor.VideoFileClip("images/opening_cutscene.mp4")
+
 """ text_in_options = "Lol No Options For you"
 game_version = "0.0.0"
 font = pygame.font.Font("fonts/minkraft.ttf", 22)
@@ -294,6 +338,9 @@ text_game_version = font.render(f"{game_version}", True, text_color)
 text_options = font.render(f"{text_in_options}", True, text_color) """
 
 #main hub
+
+tree_main_hub = entities((210, 150), (870, 430), images=(["tree_main_hub.png"]), image_size=(300, 450))
+
 
 #level one
 
@@ -315,6 +362,8 @@ level_entities = []
 while running:
     
     mouse_x, mouse_y = pygame.mouse.get_pos()
+    
+    #print(mouse_x, mouse_y)
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -344,32 +393,52 @@ while running:
 
             button_list = [back_button]
 
-        for event in pygame.event.get():
+        #for event in pygame.event.get():
 
-            mouse_button_pressed = pygame.mouse.get_pressed()       
+        mouse_button_pressed = pygame.mouse.get_pressed()       
 
-            if menu_screen == 1:
+        if menu_screen == 1:
 
-                if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed):
-                    
-                    menu_screen = buttons.button_click((mouse_x, mouse_y), button_play, mouse_button_pressed, 2)
-                    #print(mouse_x, mouse_y)
-                elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed):
-
-                    menu_screen = buttons.button_click((mouse_x, mouse_y), button_options, mouse_button_pressed, 3)
-
-                elif buttons.button_function((mouse_x, mouse_y), button_quit, mouse_button_pressed):
-                    pygame.quit()
+            if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed):
                 
-            elif menu_screen == 2:
+                #menu_screen = buttons.button_click((mouse_x, mouse_y), button_play, mouse_button_pressed, 2)
+                pygame.time.delay(100)
+                menu_screen = 2
+                #print(mouse_x, mouse_y)
+            elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed):
 
-                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
-                    menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
+                #menu_screen = buttons.button_click((mouse_x, mouse_y), button_options, mouse_button_pressed, 3)
+                pygame.time.delay(10)
+                menu_screen = 3
 
-            elif menu_screen == 3:
+            elif buttons.button_function((mouse_x, mouse_y), button_quit, mouse_button_pressed):
+                running = False
+            
+        elif menu_screen == 2:
 
-                if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
-                    menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
+            if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
+                #menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
+                
+                pygame.time.delay(10)
+                menu_screen = 1
+                
+                
+            for buttone in [save_1_button, save_2_button, save_3_button, save_4_button]:
+                if buttons.button_function((mouse_x, mouse_y), buttone, mouse_button_pressed):
+                    opening_cutscene.preview()
+                    opening_cutscene.close()
+                    screen.fill((0, 0, 0))
+                    pygame.display.update()
+                    pygame.time.delay(3000)
+                    
+                    active_location = "main hub"
+                    
+
+        elif menu_screen == 3:
+
+            if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
+                #menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
+                menu_screen = 1
 
         for button in button_list:
             screen.blit(button.button, button.pos)
@@ -378,7 +447,7 @@ while running:
     if active_location == "main hub":
         background = backgrounds.main_hub
 
-        level_entities = [the_player]
+        level_entities = [the_player, tree_main_hub]
                  
             
     if active_location == "level one":
