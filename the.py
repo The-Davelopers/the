@@ -29,10 +29,11 @@ class player_values():
         #scaling
         
         
-
-        self.pos = (position[0] * scale[0], position[1] * scale[1])
+        self.name = "player"
         
-        size = (size[0] * scale[0], size[1] * scale[1])
+        self.pos = (position[0], position[1])
+        
+        size = (size[0], size[1])
         
         self.size = size
         self.speed = speed
@@ -52,8 +53,11 @@ class entities():
   
         size = (size[0], size[1])
         
+        self.name = "entity"
+        
         self.surfaces = []
       
+        self.size = size
         
         self.collision_pos = (position[0], position[1])
         
@@ -229,7 +233,7 @@ def button_interact(mouse_pos, buttox):
         if click_rect.collidepoint(mouse_pos):
             screen.blit(buttox.outline, buttox.outline_pos)            
 
-def player_movement(direction, player_entity, level_entities):
+def player_movement(direction, player_entity, other_entities):
     global screensize
     x_change = 0
     y_change = 0
@@ -245,8 +249,68 @@ def player_movement(direction, player_entity, level_entities):
     
     if "down" in direction:
         y_change = 1
+        
     x, y = player_entity.pos
 
+    player_size = player_entity.size
+    
+    right_edge = x + player_size[0]
+    down_edge = y + player_size[1]
+            
+    for entity in other_entities:
+        if entity.name == "player":
+            pass
+        else:  
+            size = entity.size
+                
+            x_pos, y_pos = entity.collision_pos   
+            
+            #*left
+            if x <= x_pos + size[0] + 2 and x_change == -1:
+                
+                if x >= x_pos + size[0] - 2:
+                    
+                    if y <= y_pos + size[1] + 2:
+                        
+                        if down_edge >= y_pos - 2:
+                            
+                            x_change = 0
+                                    
+            #*right
+            if right_edge >= x_pos - 2 and x_change == 1:
+
+                if right_edge <= x_pos + 2:
+
+                    if y <= y_pos + size[1] + 2:
+                        
+                        if down_edge >= y_pos - 2:
+                            
+                            x_change = 0
+                                            
+            #*up    
+            if y <= y_pos + size[1] + 2 and y_change == -1:
+
+                if y >= y_pos + size[1] - 2:
+                    
+                    if x <= x_pos + size[0] + 2:
+                        
+                        if right_edge >= x_pos - 2:
+                            
+                            y_change = 0
+                                        
+            #*down
+            if down_edge >= y_pos - 2 and y_change == 1:
+                
+                if down_edge <= y_pos + 2:
+                    
+                    if x <= x_pos + size[0] + 2:
+                        
+                        if right_edge >= x_pos - 2:
+                            
+                            
+                            y_change = 0
+                                        
+            entity.collision_pos = (x_pos, y_pos)
     
     size = player_entity.size
 
@@ -287,7 +351,7 @@ def file_saving():
 
 #*Main variables
 
-active_location = "main menu"
+active_location = "level one"
 
 backgrounds = background_load()
 
@@ -345,9 +409,9 @@ tree_main_hub = entities((210, 150), (870, 430), images=(["tree_main_hub.png"]),
 #level one
 
 
-box_level_one = entities((200, 200), (1400, 300), images=os.listdir("images/amogus/"))
+box_level_one = entities((200, 150), (1400, 300), images=["box_level_one.png"], image_size=(200, 200))
 
-track_level_one = entities((0, 0), (1550, 900), images=["track_one.png"], image_size=(100, 600))
+track_level_one = entities((0, 0), (1500, 900), images=["track_level_one.png"], image_size=(100, 600))
 
 tree_level_one = entities((150, 50), (300, 600), images=["tree_level_one.png"], image_size=(400, 600))
 
@@ -453,7 +517,7 @@ while running:
     if active_location == "level one":
         background = backgrounds.level_one
         
-        level_entities = [track_level_one, bush_level_one, tree_level_one, box_level_one]
+        level_entities = [track_level_one, the_player, bush_level_one, tree_level_one, box_level_one]
         
         if "player completes level":
             save_data["level one complete"] = True
