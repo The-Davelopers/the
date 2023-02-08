@@ -33,7 +33,7 @@ class player_values():
         
         self.pos = (position[0], position[1])
         
-        size = (size[0], size[1])
+        self.movable = [False]
         
         self.size = size
         self.speed = speed
@@ -44,16 +44,16 @@ class player_values():
         except:
             self.surface = pygame.surface.Surface(size)
             self.surface.fill(color)
-        
-        #print(self.surface)
-        
+           
 class entities():
-    def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None):
+    def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None, fill=True, name="entity", movable=[False]):
         #scaling 
   
         size = (size[0], size[1])
         
-        self.name = "entity"
+        self.movable = movable 
+        
+        self.name = name
         
         self.surfaces = []
       
@@ -69,7 +69,7 @@ class entities():
             image_size = (image_size[0], image_size[1])
         except:    
             image_size = size
-            
+        self.image_size = image_size    
         try:
             self.pos = (self.collision_pos[0] + size[0]/2 - image_size[0]/2, self.collision_pos[1] + size[1] - image_size[1])
         except:
@@ -85,18 +85,22 @@ class entities():
                 self.surfaces.append(surface)
         except:
             surface = pygame.surface.Surface(size)
-            surface.fill(color)
+            if fill:
+                surface.fill(color)
+            else:
+                surface = surface.convert_alpha()
+                surface.fill((0, 0, 0, 0))
             self.surfaces.append(surface)
             
         self.surface = self.surfaces[0]
         
             
-        def image_anchoring(entity):
-            #setting an anchor point for the image to the collision box
-            
-            image_position = (self.collision_pos[0] + size[0]/2 - image_size[0]/2, self.collision_pos[1] + size[1] - image_size[1])
-            
-            return image_position
+    def image_anchoring(entity):
+        #setting an anchor point for the image to the collision box
+        
+        image_position = (entity.collision_pos[0] + entity.size[0]/2 - entity.image_size[0]/2, entity.collision_pos[1] + entity.size[1] - entity.image_size[1])
+        
+        return image_position
             
 class buttons():
     def __init__(self, image, size, position, hitbox):
@@ -228,6 +232,36 @@ class background_load():
           
 #*Functions
 
+def fade_in_out(surface, background, level_entities, fade_type="in out"):
+    if fade_type == "out" or fade_type == "in out":
+        for i in range(255):
+            
+            
+            fade = pygame.Surface(screensize)  
+            fade.set_alpha(i)                
+            fade.fill((0,0,0))           
+            surface.blit(fade, (0,0))
+            pygame.display.update()
+            pygame.time.delay(5)
+    
+    #pygame.time.delay(5000)
+    if fade_type == "in" or fade_type == "in out":
+        for i in range(255):
+            
+            try:
+                screen.fill(background)
+            except:
+                screen.blit(background, (0, 0))
+            for entity in level_entities:
+                screen.blit(entity.surface, entity.pos)
+                
+            fade = pygame.Surface(screensize)
+            fade.set_alpha(225 - i)                
+            fade.fill((0,0,0))           
+            surface.blit(fade, (0,0))
+            pygame.display.update()
+            pygame.time.delay(5)
+
 def button_interact(mouse_pos, buttox):
         click_rect = pygame.Rect(buttox.button.get_rect(center=(buttox.hit)))
         if click_rect.collidepoint(mouse_pos):
@@ -260,9 +294,20 @@ def player_movement(direction, player_entity, other_entities):
     for entity in other_entities:
         if entity.name == "player":
             pass
-        else:  
-            size = entity.size
+        elif entity.name == "teleport":
+            pass
+        else:
+            directions = ""
+            if entity.movable[0]:
+                for direction in entity.movable[1]:
+                    directions += f"{direction} "
                 
+                max_x, max_y = entity.movable[2][0]
+                min_x, min_y = entity.movable[2][1]
+                    
+            size = entity.size
+            
+            
             x_pos, y_pos = entity.collision_pos   
             
             #*left
@@ -274,7 +319,14 @@ def player_movement(direction, player_entity, other_entities):
                         
                         if down_edge >= y_pos - 2:
                             
-                            x_change = 0
+                            if "left" in directions:
+                                if x_pos > min_x: 
+                                    x_change = -0.25
+                                    x_pos -= 0.5
+                                else:
+                                    x_change = 0
+                            else:
+                                x_change = 0
                                     
             #*right
             if right_edge >= x_pos - 2 and x_change == 1:
@@ -284,6 +336,15 @@ def player_movement(direction, player_entity, other_entities):
                     if y <= y_pos + size[1] + 2:
                         
                         if down_edge >= y_pos - 2:
+                            
+                            if "right" in directions:
+                                if x_pos < max_x: 
+                                    x_change = 0.25
+                                    x_pos += 0.5
+                                else:
+                                    x_change = 0
+                            else:
+                                x_change = 0
                             
                             x_change = 0
                                             
@@ -296,7 +357,14 @@ def player_movement(direction, player_entity, other_entities):
                         
                         if right_edge >= x_pos - 2:
                             
-                            y_change = 0
+                            if "up" in directions:
+                                if y_pos > min_y: 
+                                    y_change = -0.25
+                                    y_pos -= 0.5
+                                else:
+                                    y_change = 0
+                            else:
+                                y_change = 0
                                         
             #*down
             if down_edge >= y_pos - 2 and y_change == 1:
@@ -307,9 +375,16 @@ def player_movement(direction, player_entity, other_entities):
                         
                         if right_edge >= x_pos - 2:
                             
-                            
-                            y_change = 0
-                                        
+                            if "down" in directions:
+                                if y_pos < max_y:
+                                    y_change = 0.25
+                                    y_pos += 0.5
+                                else:
+                                    
+                                    y_change = 0
+                            else:
+                                y_change = 0
+            entity.pos = entity.image_anchoring()
             entity.collision_pos = (x_pos, y_pos)
     
     size = player_entity.size
@@ -346,6 +421,13 @@ def player_movement(direction, player_entity, other_entities):
             )
         return new_image_group
 
+def teleport(entity, player):
+    entity_hitbox = pygame.rect.Rect(entity.collision_pos, entity.size)
+
+    player_hitbox = pygame.rect.Rect(player.pos, player.size)
+
+    return entity_hitbox.colliderect(player_hitbox)
+    
 def file_saving():
     pass
 
@@ -371,12 +453,10 @@ level_entities = []
 
 the_player = player_values((50, 100), (300, 300), image="amogus_idle_1.png")
 
-
 running = True
 
-#main menu
 
-#button_play = entities((960, 510), (780, 450), images=["button_play.png"], image_size=(360, 120))
+#main menu
 
 button_play = buttons("button_play.png", (360, 120), (780, 450), (960, 510))
 
@@ -401,29 +481,44 @@ text_color = (255, 255, 255)
 text_game_version = font.render(f"{game_version}", True, text_color)
 text_options = font.render(f"{text_in_options}", True, text_color) """
 
+
 #main hub
 
+left_border_wall_main_hub = entities((200 ,1080), (0, 0), fill=False)
+
+right_border_wall_main_hub = entities((180 ,1080), (1740, 0), fill=False)
+
+top_border_wall_main_hub = entities((1920, 100), (0, 0), fill=False)
+
+bottom_border_wall_right_main_hub = entities((895, 160), (1025 ,920), fill=False)
+
+bottom_border_wall_left_main_hub = entities((880, 170), (0 ,910), fill=False)
+
 tree_main_hub = entities((210, 150), (870, 430), images=(["tree_main_hub.png"]), image_size=(300, 450))
+
+exit_main_hub = entities((145, 20), (880, 1060), fill=False, name="teleport")
 
 
 #level one
 
-
-box_level_one = entities((200, 150), (1400, 300), images=["box_level_one.png"], image_size=(200, 200))
+box_level_one = entities((200, 150), (1400, 300), images=["box_level_one.png"], image_size=(200, 200), movable=[True, ["down"], [(1400, 750), (1400, 300)]])
 
 track_level_one = entities((0, 0), (1500, 900), images=["track_level_one.png"], image_size=(100, 600))
 
 tree_level_one = entities((150, 50), (300, 600), images=["tree_level_one.png"], image_size=(400, 600))
 
-bush_level_one = entities((175, 125), (400, 750), images=["bush_level_one.png"], image_size=(175, 175))
+bush_level_one = entities((175, 125), (1000, 750), images=["bush_level_one.png"], image_size=(175, 175))
 
-exit_level_one = entities((960, 0), (25, 10))
+exit_level_one = entities((145, 20), (880, 1060), fill=False, name="teleport")
 
 level_entities = []
 
 #*Main Loop
+yes = 1
 
 while running:
+    
+    
     
     mouse_x, mouse_y = pygame.mouse.get_pos()
     
@@ -438,10 +533,11 @@ while running:
     except:
         screen.blit(background, (0, 0))
         
+        
 
     if active_location == "main menu":
         background = backgrounds.main_menu
-
+        level_entities = []
         
 
         if menu_screen == 1:
@@ -493,7 +589,9 @@ while running:
                     opening_cutscene.close()
                     screen.fill((0, 0, 0))
                     pygame.display.update()
-                    pygame.time.delay(3000)
+                    pygame.time.delay(1000)
+                    fade_in_out(screen, backgrounds.main_hub,[the_player, tree_main_hub], fade_type="in")
+                    #
                     
                     active_location = "main hub"
                     
@@ -503,16 +601,23 @@ while running:
             if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
                 #menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
                 menu_screen = 1
-
-        for button in button_list:
-            screen.blit(button.button, button.pos)
-            button_interact((mouse_x, mouse_y), button)
+        if active_location == "main menu":
+            for button in button_list:
+                screen.blit(button.button, button.pos)
+                button_interact((mouse_x, mouse_y), button)
     
     if active_location == "main hub":
         background = backgrounds.main_hub
 
-        level_entities = [the_player, tree_main_hub]
-                 
+        level_entities = [left_border_wall_main_hub, right_border_wall_main_hub, top_border_wall_main_hub, bottom_border_wall_left_main_hub, 
+        bottom_border_wall_right_main_hub, exit_main_hub, the_player, tree_main_hub]
+        
+        if teleport(exit_main_hub, the_player):
+            
+            the_player.pos = (the_player.pos[0], 800)
+            
+            fade_in_out(screen, backgrounds.level_one, [track_level_one, the_player, bush_level_one, tree_level_one, box_level_one])
+            active_location = "level one"         
             
     if active_location == "level one":
         background = backgrounds.level_one
