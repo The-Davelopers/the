@@ -250,8 +250,8 @@ class text_class():
         with open("textfile.txt") as file:
             self.lines = file.read().splitlines()
         self.box_img = pygame.image.load("text_box.png")
-        self.box_x = 550
-        self.box_y = 800
+        self.box_x = 350
+        self.box_y = 600
         self.font = pygame.font.Font(r"fonts\minkraft.ttf", 30)
         self.x = self.box_x + 25
         self.y = self.box_y + 50
@@ -260,6 +260,10 @@ class text_class():
         self.whos_talking_x = self.box_x + 32
         self.whos_talking_y = self.box_y + 10
         self.whos_talking_color = (136, 136, 136)
+        self.enter_img = pygame.image.load("enter.png")
+        self.enter = pygame.transform.scale(self.enter_img, (136.75, 29))
+        self.enter_x = self.box_x + 700
+        self.enter_y = self.box_y + 125
 
 class animate_cheese():
     def __init__(self) -> None:
@@ -485,152 +489,158 @@ def teleport(entity, player):
 
 def dialogue(first, last):
     while True:
-        if not text.first > first:
-            text.first = first
-        text.line_2 = text.first + 1
-        text.line_3 = text.first + 2
-        name = first - 1
+    if not text.first > first:
+        text.first = first
+    text.line_2 = text.first + 1
+    text.line_3 = text.first + 2
+    name = first - 1
 
-        def show_text(x, y, text, reset_key=False):
-            
-            if not text.done:
-                with open("textfile.txt") as file:
-                    for i, letter in enumerate(text.lines[text.first]):
-                        if text.iterable > len(text.lines[text.first])*10:
-                            text.iterable = 0
-                        if text.iterable == i*10:
-                            text.temporary_string += letter
-                            text.string_to_print += letter
-                    text.iterable += 1
-                    if text.lines[text.first] == text.temporary_string:
-                        text.iterable = -1
-
-                        if not last - text.first > 3:
-                            for  event in pygame.event.get():
-                                if event.type == pygame.KEYDOWN:
-                                    if event.key == pygame.K_RETURN:
-                                        text.first += 3
-                        
-                        if last - text.first > 1:    
-                            text.line_done = True
-                            return text.line_done
-
-                    text.whos_talking_name = text.lines[name]
-            whos_talking = text.font.render(text.whos_talking_name, True, text.whos_talking_color)
-            screen.blit(whos_talking, (text.whos_talking_x, text.whos_talking_y))
-                                
-            text = text.font.render(text.string_to_print, True, text.color)
-            screen.blit(text, (x, y))
-
-        def show_text_2(x, y, y_2, text, reset_key=False):
-
-            if not text.done:
-                with open("textfile.txt") as file:
-                    for i, letter in enumerate(text.lines[text.line_2]):
-                        if text.iterable_2 > len(text.lines[text.line_2])*10:
-                            text.iterable_2 = 0
-                        if text.iterable_2 == i*10:
-                            text.temporary_string_2 += letter
-                            text.string_to_print_2 += letter
-
-                    text.iterable_2 += 1
-                    if text.lines[text.line_2] == text.temporary_string_2:
-
-                        text.iterable_2 = -1
-                        text.string_to_print_2 += ""
-
-                        if not last - text.first > 3:
-                            for  event in pygame.event.get():
-                                if event.type == pygame.KEYDOWN:
-                                    if event.key == pygame.K_RETURN:
-                                        text.first += 3
-                        
-                        if last - text.first > 2:    
-                            text.line_done_2 = True
-                            return text.line_done_2    
-
-                    text.whos_talking_name = text.lines[name]
-            whos_talking = text.font.render(text.whos_talking_name, True, text.whos_talking_color)
-            screen.blit(whos_talking, (text.whos_talking_x, text.whos_talking_y))
-
-            text_2 = text.font.render(text.string_to_print_2, True, text.color)
-            screen.blit(text_2, (x, y_2))
-
-            text = text.font.render(text.lines[text.first], True, text.color)
-            screen.blit(text, (x, y))
-
-        def show_text_3(x, y, y_2, y_3, text, reset_key=False):
-
-            if not text.done:
-                with open("textfile.txt") as file:
-                    for i, letter in enumerate(text.lines[text.line_3]):
-                        if text.iterable_3 > len(text.lines[text.line_3])*10:
-                            text.iterable_3 = 0
-                        if text.iterable_3 == i*10:
-                            text.temporary_string_3 += letter
-                            text.string_to_print_3 += letter
-
-                    text.iterable_3 += 1
-                    if text.lines[text.line_3] == text.temporary_string_3:
-
-                        text.iterable_3 = -1
-                        text.string_to_print_3 += ""
-                            
+    def show_text(x, y, text, reset_key=False):
+        
+        if not text.done:
+            with open("textfile.txt") as file:
+                for i, letter in enumerate(text.lines[text.first]):
+                    if text.iterable > len(text.lines[text.first])*10:
+                        text.iterable = 0
+                    if text.iterable == i*10:
+                        text.temporary_string += letter
+                        text.string_to_print += letter
+                text.iterable += 1
+                if text.lines[text.first] == text.temporary_string:
+                    text.iterable = -1
+                    
+                    if not last - text.first > 3:
                         for  event in pygame.event.get():
                             if event.type == pygame.KEYDOWN:
                                 if event.key == pygame.K_RETURN:
-                                            
-                                    next_line = True
                                     text.first += 3
+                    
+                    if last - text.first > 1:   
+                        text.line_done = True
+                        return text.line_done
+                    else: 
+                        screen.blit(text.enter, (text.enter_x, text.enter_y)) 
 
-                                    text.string_to_print = ""
-                                    text.string_to_print_2 = ""
-                                    text.string_to_print_3 = ""
-                                    text.iterable = 0
-                                    text.iterable_2 = 0
-                                    text.iterable_3 = 0
-                                    text.temporary_string = ""
-                                    text.temporary_string_2 = ""
-                                    text.temporary_string_3 = ""
-                                    text.done = False
-                                    text.line_done = False
-                                    text.line_done_2 = False
-                                    text.line_2 = first + 1
-                                    text.line_3 = first + 2
+                text.whos_talking_name = text.lines[name]
+        whos_talking = text.font.render(text.whos_talking_name, True, text.whos_talking_color)
+        screen.blit(whos_talking, (text.whos_talking_x, text.whos_talking_y))
+                            
+        text = text.font.render(text.string_to_print, True, text.color)
+        screen.blit(text, (x, y))
 
-                                    return text.first
+    def show_text_2(x, y, y_2, text, reset_key=False):
 
-                    text.whos_talking_name = text.lines[name]
-            whos_talking = text.font.render(text.whos_talking_name, True, text.whos_talking_color)
-            screen.blit(whos_talking, (text.whos_talking_x, text.whos_talking_y))
+        if not text.done:
+            with open("textfile.txt") as file:
+                for i, letter in enumerate(text.lines[text.line_2]):
+                    if text.iterable_2 > len(text.lines[text.line_2])*10:
+                        text.iterable_2 = 0
+                    if text.iterable_2 == i*10:
+                        text.temporary_string_2 += letter
+                        text.string_to_print_2 += letter
 
-            text_3 = text.font.render(text.string_to_print_3, True, text.color)
-            screen.blit(text_3, (x, y_3))
+                text.iterable_2 += 1
+                if text.lines[text.line_2] == text.temporary_string_2:
 
-            string_to_print_2 = text.lines[text.line_2]
-            text_2 = text.font.render(text.string_to_print_2, True, text.color)
-            screen.blit(text_2, (x, y_2))
+                    text.iterable_2 = -1
+                    text.string_to_print_2 += ""
 
-            string_to_print = text.lines[text.first]
-            text = text.font.render(text.string_to_print, True, text.color)
-            screen.blit(text, (x, y))
+                    if not last - text.first > 3:
+                        for  event in pygame.event.get():
+                            if event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_RETURN:
+                                    text.first += 3
+                    
+                    if last - text.first > 2:    
+                        text.line_done_2 = True
+                        return text.line_done_2  
+                    else: 
+                        screen.blit(text.enter, (text.enter_x, text.enter_y))  
 
-        def text_box(x, y):
-            screen.blit(text.box_img, (x, y))
+                text.whos_talking_name = text.lines[name]
+        whos_talking = text.font.render(text.whos_talking_name, True, text.whos_talking_color)
+        screen.blit(whos_talking, (text.whos_talking_x, text.whos_talking_y))
 
-        if not text.first >= last:
-            text_box(text.box_x, text.box_y)
+        text_2 = text.font.render(text.string_to_print_2, True, text.color)
+        screen.blit(text_2, (x, y_2))
 
-            show_text(text.x, text.y, text)
+        text = text.font.render(text.lines[text.first], True, text.color)
+        screen.blit(text, (x, y))
 
-            if text.line_done == True:
-                show_text_2(text.x, text.y, text.y_2, text)
+    def show_text_3(x, y, y_2, y_3, text, reset_key=False):
 
-            if text.line_done_2 == True:
-                show_text_3(text.x, text.y, text.y_2, text.y_3, text)    
-        else: 
-            break
-        pygame.display.update()
+        if not text.done:
+            with open("textfile.txt") as file:
+                for i, letter in enumerate(text.lines[text.line_3]):
+                    if text.iterable_3 > len(text.lines[text.line_3])*10:
+                        text.iterable_3 = 0
+                    if text.iterable_3 == i*10:
+                        text.temporary_string_3 += letter
+                        text.string_to_print_3 += letter
+
+                text.iterable_3 += 1
+                if text.lines[text.line_3] == text.temporary_string_3:
+
+                    text.iterable_3 = -1
+                    text.string_to_print_3 += ""
+                    
+                    screen.blit(text.enter, (text.enter_x, text.enter_y))
+
+                    for  event in pygame.event.get():
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_RETURN:
+                                        
+                                next_line = True
+                                text.first += 3
+
+                                text.string_to_print = ""
+                                text.string_to_print_2 = ""
+                                text.string_to_print_3 = ""
+                                text.iterable = 0
+                                text.iterable_2 = 0
+                                text.iterable_3 = 0
+                                text.temporary_string = ""
+                                text.temporary_string_2 = ""
+                                text.temporary_string_3 = ""
+                                text.done = False
+                                text.line_done = False
+                                text.line_done_2 = False
+                                text.line_2 = first + 1
+                                text.line_3 = first + 2
+
+                                return text.first
+
+                text.whos_talking_name = text.lines[name]
+        whos_talking = text.font.render(text.whos_talking_name, True, text.whos_talking_color)
+        screen.blit(whos_talking, (text.whos_talking_x, text.whos_talking_y))
+
+        text_3 = text.font.render(text.string_to_print_3, True, text.color)
+        screen.blit(text_3, (x, y_3))
+
+        string_to_print_2 = text.lines[text.line_2]
+        text_2 = text.font.render(text.string_to_print_2, True, text.color)
+        screen.blit(text_2, (x, y_2))
+
+        string_to_print = text.lines[text.first]
+        text = text.font.render(text.string_to_print, True, text.color)
+        screen.blit(text, (x, y))
+
+    def text_box(x, y):
+        screen.blit(text.box_img, (x, y))
+
+    if not text.first >= last:
+        text_box(text.box_x, text.box_y)
+
+        show_text(text.x, text.y, text)
+
+        if text.line_done == True:
+            show_text_2(text.x, text.y, text.y_2, text)
+
+        if text.line_done_2 == True:
+            show_text_3(text.x, text.y, text.y_2, text.y_3, text)    
+    else: 
+        break
+    pygame.display.update()
 
 def file_saving(file_name, ):
     pass
