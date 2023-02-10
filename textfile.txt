@@ -1,16 +1,22 @@
 Example (35 characters)
  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-Generic character
- Hello my child                 
- I've waited for so long
- You don't look like what I imagined
- but no matter, this is important
+Sensei
+ Hello there weary traveler. 
+ You are in luck, cus I have a mission for you! 
 
-Another character
- hi 
- yes 
- no
+ Head down that path  
+ you will find yourself in a hidden valley. 
+
+ I need you to fetch me the cheese,
+ located behind a door. 
+ 
+ to open it you may need to push something
+ Shall you return the cheese to me, 
+ you shall receive a hefty reward!          
+
+
+
 
 Narrator 
  This is the story of a great great tasting cheese 

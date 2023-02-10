@@ -42,6 +42,15 @@ class player_values():
         except:
             self.surface = pygame.surface.Surface(size)
             self.surface.fill(color)
+        
+    def animate(self):
+        for i, image in enumerate(self.images):
+            if self.counter > i*60:
+                self.surface = image
+            if self.counter > len(self.images)*60:
+                self.counter = 0
+        self.counter += self.speed
+        return self.surface, self.counter
            
 class entities():
     def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None, fill=True, name="entity", movable=[False]):
@@ -248,8 +257,8 @@ class text_class():
         with open("textfile.txt") as file:
             self.lines = file.read().splitlines()
         self.box_img = pygame.image.load("images/text_box.png")
-        self.box_x = 350
-        self.box_y = 600
+        self.box_x = 500
+        self.box_y = 850
         self.font = pygame.font.Font(r"fonts\minkraft.ttf", 30)
         self.x = self.box_x + 25
         self.y = self.box_y + 50
@@ -277,6 +286,7 @@ class continuos_animation():
         self.counter = 0
         self.surface = images[0]
         self.pos = position
+        
     def animate(self):
         for i, image in enumerate(self.images):
             if self.counter > i*60:
@@ -870,7 +880,7 @@ while running:
                     screen.fill((0, 0, 0))
                     pygame.display.update()
                     pygame.time.delay(1000)
-                    fade_in_out(screen, backgrounds.main_hub, [the_player, tree_main_hub], fade_type="in")
+                    fade_in_out(screen, backgrounds.main_hub, [the_player, tree_main_hub, sensei_main_hub], fade_type="in")
                     background_music()
                     
                     active_location = "main hub"
@@ -885,7 +895,7 @@ while running:
             if mouse_button_pressed[0]:
                 click_rect = pygame.Rect(950, 450, 80, 100)
                 if click_rect.collidepoint((mouse_x, mouse_y)):
-                    pygame.mixer.music.load("among_us.mp3")
+                    pygame.mixer.music.load("sound_effects/among_us.mp3")
                     pygame.mixer.music.play()
                 
         if active_location == "main menu":
@@ -894,7 +904,7 @@ while running:
                 button_interact((mouse_x, mouse_y), button)
     
     if active_location == "main hub":
-        dialogue(4, 9)
+        dialogue(4, 16)
         background = backgrounds.main_hub
         sensei_main_hub.animate()
 
@@ -905,7 +915,7 @@ while running:
              
             the_player.pos = (the_player.pos[0], 800)
             
-            fade_in_out(screen, backgrounds.level_one, [track_level_one, the_player, bush_level_one, tree_level_one, box_level_one])
+            fade_in_out(screen, backgrounds.level_one, [track_level_one, light_level_one, the_player, bush_level_one, tree_level_one, box_level_one, door_level_one, level_one_shadow])
             active_location = "level one"         
             
     if active_location == "level one":
@@ -916,10 +926,11 @@ while running:
                           right_border_wall_level_one, top_border_wall_level_one, bottom_border_wall_left_level_one, bottom_border_wall_right_level_one]
 
         if box_level_one.collision_pos == box_level_one.movable[2][0]:
-            light_level_one.change_image()
-            pygame.time.delay(1000)
-            play_sound_effect("door_open_level_one.mp3")
-            door_level_one.change_image()
+            if door_level_one.surface != door_level_one.images[1]:
+                light_level_one.change_image()
+                pygame.time.delay(1000)
+                play_sound_effect("door_open_level_one.mp3")
+                door_level_one.change_image()
         
         if "player completes level":
             save_data["level one complete"] = True
