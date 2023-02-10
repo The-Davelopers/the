@@ -264,12 +264,14 @@ class text_class():
         self.enter_y = self.box_y + 125
 
 class continuos_animation():
-    def __init__(self, folder, speed, position) -> None:
+    def __init__(self, folder, speed, position, size) -> None:
         images = os.listdir(f"images/{folder}")
 
             
         for i, image in enumerate(images):
-            images[i] = pygame.image.load(f"images/{folder}/{image}").convert_alpha()
+            images[i] = pygame.transform.scale(pygame.image.load(f"images/{folder}/{image}").convert_alpha(), size)
+            
+        self.name = "player"
         self.speed = speed
         self.images = images
         self.counter = 0
@@ -705,7 +707,7 @@ pygame.mixer.music.set_endevent ( pygame.USEREVENT )
 #main menu
 
 
-the_cheese = continuos_animation("the_cheese_logo", 10, (665, 100))
+the_cheese = continuos_animation("the_cheese_logo", 10, (665, 100), (600, 338))
 
 button_play = buttons("button_play.png", (360, 120), (780, 450), (960, 510))
 
@@ -743,12 +745,13 @@ bottom_border_wall_right_main_hub = entities((895, 160), (1025 ,920), fill=False
 
 bottom_border_wall_left_main_hub = entities((880, 170), (0 ,910), fill=False)
 
-tree_main_hub = entities((210, 150), (870, 430), images=(["tree_main_hub.png"]), image_size=(300, 450))
+tree_main_hub = entities((210, 130), (870, 430), images=(["tree_main_hub.png"]), image_size=(300, 450))
 
 exit_main_hub = entities((145, 20), (880, 1060), fill=False, name="teleport")
 
-sensei_main_hub = continuos_animation("sensei_idle", 30, (1200, 480))
+sensei_main_hub = continuos_animation("sensei_idle", 2, (1070, 450), (120, 120))
 
+sensei_main_hub_hitbox = entities((100, 100), (1070, 470), fill=False)
 
 #level one
 
@@ -893,9 +896,10 @@ while running:
     if active_location == "main hub":
         dialogue(4, 9)
         background = backgrounds.main_hub
+        sensei_main_hub.animate()
 
         level_entities = [left_border_wall_main_hub, right_border_wall_main_hub, top_border_wall_main_hub, bottom_border_wall_left_main_hub, 
-        bottom_border_wall_right_main_hub, exit_main_hub, the_player, tree_main_hub, sensei_main_hub]
+        bottom_border_wall_right_main_hub, exit_main_hub, the_player, tree_main_hub, sensei_main_hub, sensei_main_hub_hitbox]
         
         if teleport(exit_main_hub, the_player):
              
