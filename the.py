@@ -199,10 +199,10 @@ class background_load():
             self.main_hub = (0, 128, 0)
             
         try:
-            level_one = pygame.image.load("images/level_one_background.png").convert()
+            level_one = pygame.image.load("images/level_one_backgrsound.png").convert()
             self.level_one = pygame.transform.scale(level_one, (screensize))
         except:
-            self.level_one = (0, 128, 0)
+            self.level_one = (255, 255, 255)
         
         try:
             level_two = pygame.image.load("images/level_two_background.png").convert()
@@ -281,6 +281,22 @@ class animate_cheese():
                 self.counter = 0
         self.counter += 10
         return self.surface, self.counter
+
+class one_image_animation():    
+    def __init__(self, folder, size, position):
+        lista = os.listdir(folder)
+        self.images = []
+        for image in lista:
+            self.images.append(pygame.transform.scale((pygame.image.load(f"{folder}/{image}")), size))
+        
+        self.surface = self.images[0]
+        self.pos = position
+        self.name = "teleport"
+        
+    def change_image(self):
+        self.surface = self.images[1]
+        return self.surface
+    
 
 
 #*Functions
@@ -439,6 +455,7 @@ def player_movement(direction, player_entity, other_entities):
                                     y_change = 0
                             else:
                                 y_change = 0
+                                
             entity.pos = entity.image_anchoring()
             entity.collision_pos = (x_pos, y_pos)
     
@@ -649,11 +666,11 @@ def background_music():
     
     pygame.mixer.music.load(f"music/{song}")
     pygame.mixer.music.play()
-    
+
     
 #*Main variables
 
-active_location = "main menu"
+active_location = "level one"
 
 backgrounds = background_load()
 
@@ -727,15 +744,21 @@ box_level_one = entities((200, 150), (1400, 300), images=["box_level_one.png"], 
 
 track_level_one = entities((0, 0), (1500, 900), images=["track_level_one.png"], image_size=(100, 600))
 
-tree_level_one = entities((150, 50), (300, 600), images=["tree_level_one.png"], image_size=(400, 600))
+tree_level_one = entities((110, 25), (290, 475), images=["tree_level_one.png"], image_size=(290, 402))
 
-bush_level_one = entities((175, 125), (1000, 750), images=["bush_level_one.png"], image_size=(175, 175))
+bush_level_one = entities((175, 125), (300, 750), images=["bush_level_one.png"], image_size=(160, 160))
 
-exit_level_one = entities((145, 20), (880, 1060), fill=False, name="teleport")
+#exit_level_one = entities((145, 20), (880, 1060), fill=False, name="teleport")
+
+level_one_shadow = entities((0, 0), (960, 1080), images=["level_one_shadow.png"], image_size=(1920, 1080))
+
+light_level_one = one_image_animation("images/light_level_one",(60, 60), (1077, 20))
 
 level_entities = []
 
 background_music()
+
+
 #*Main Loop
 
 while running:
@@ -862,7 +885,11 @@ while running:
     if active_location == "level one":
         background = backgrounds.level_one
         
-        level_entities = [track_level_one, the_player, bush_level_one, tree_level_one, box_level_one]
+
+        level_entities = [track_level_one, light_level_one, the_player, bush_level_one, tree_level_one, box_level_one,  level_one_shadow]
+
+        if box_level_one.collision_pos == box_level_one.movable[2][0]:
+            light_level_one.change_image()
         
         if "player completes level":
             save_data["level one complete"] = True
