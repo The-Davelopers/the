@@ -120,7 +120,7 @@ class buttons():
 
     def button_click(mouse_pos, button_id, mouse_button_pressed, button_index):
         if mouse_button_pressed[0]:
-            #click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+
             click_rect = pygame.rect.Rect((button_id.pos), (button_id.outline_size))
             if click_rect.collidepoint(mouse_pos):
                 ms = button_index
@@ -128,13 +128,11 @@ class buttons():
 
     def button_function(mouse_pos, button_id, mouse_button_pressed):
         click_rect = pygame.rect.Rect((button_id.pos), (button_id.outline_size))
-        #print(click_rect, mouse_pos, button_id.name)
-        #print(click_rect.collidepoint(mouse_pos))    
+
         if mouse_button_pressed[0]:
-            #click_rect = pygame.Rect(button_id.button.get_rect(center=(button_id.hit)))
+
             click_rect = pygame.rect.Rect((button_id.pos), (button_id.outline_size))
-            #print(click_rect, mouse_pos)
-            #print(click_rect.collidepoint(mouse_pos))
+
             if click_rect.collidepoint(mouse_pos):
 
                 return True
@@ -194,7 +192,7 @@ class background_load():
         try:
             main_hub = pygame.image.load("images/main_hub_background.png").convert()
             self.main_hub = pygame.transform.scale(main_hub, (screensize))
-            #print("clear")
+
         except:
             self.main_hub = (0, 128, 0)
             
@@ -265,25 +263,25 @@ class text_class():
         self.enter_x = self.box_x + 700
         self.enter_y = self.box_y + 125
 
-class animate_cheese():
-    def __init__(self) -> None:
-        images = os.listdir("the_cheese_logo")
+class continuos_animation():
+    def __init__(self, folder, speed, position) -> None:
+        images = os.listdir(f"images/{folder}")
 
             
         for i, image in enumerate(images):
-            images[i] = pygame.image.load(f"the_cheese_logo/{image}")
-
+            images[i] = pygame.image.load(f"images/{folder}/{image}").convert_alpha()
+        self.speed = speed
         self.images = images
         self.counter = 0
         self.surface = images[0]
-        self.pos = (665, 100)
+        self.pos = position
     def animate(self):
         for i, image in enumerate(self.images):
             if self.counter > i*60:
                 self.surface = image
             if self.counter > len(self.images)*60:
                 self.counter = 0
-        self.counter += 10
+        self.counter += self.speed
         return self.surface, self.counter
 
 class one_image_animation():    
@@ -291,7 +289,7 @@ class one_image_animation():
         lista = os.listdir(folder)
         self.images = []
         for image in lista:
-            self.images.append(pygame.transform.scale((pygame.image.load(f"{folder}/{image}")), size))
+            self.images.append(pygame.transform.scale((pygame.image.load(f"{folder}/{image}").convert_alpha()), size))
         
         self.surface = self.images[0]
         self.pos = position
@@ -319,7 +317,7 @@ def fade_in_out(surface, background, level_entities, fade_type="in out"):
             pygame.display.update()
             pygame.time.delay(5)
     
-    #pygame.time.delay(5000)
+
     if fade_type == "in" or fade_type == "in out":
         for i in range(255):
             
@@ -662,10 +660,9 @@ def dialogue(first, last):
 def file_saving(file_name, ):
     pass
 
-def button_click():
+def play_sound_effect(sound):
     
-
-    click = pygame.mixer.Sound("button_press_1.wav")
+    click = pygame.mixer.Sound(f"sound_effects/{sound}")
     click.play()
 
 def background_music():
@@ -680,7 +677,7 @@ def background_music():
     
 #*Main variables
 
-active_location = "level one"
+active_location = "main hub"
 
 backgrounds = background_load()
 
@@ -696,7 +693,7 @@ save_data = {
 
 level_entities = []
 
-the_player = player_values((50, 100), (300, 300), image="amogus_idle_1.png")
+the_player = player_values((50, 100), (1200, 480), image="amogus_idle_1.png")
 
 running = True
 
@@ -705,7 +702,7 @@ pygame.mixer.music.set_endevent ( pygame.USEREVENT )
 #main menu
 
 
-the_cheese = animate_cheese()
+the_cheese = continuos_animation("the_cheese_logo", 10, (665, 100))
 
 button_play = buttons("button_play.png", (360, 120), (780, 450), (960, 510))
 
@@ -747,6 +744,8 @@ tree_main_hub = entities((210, 150), (870, 430), images=(["tree_main_hub.png"]),
 
 exit_main_hub = entities((145, 20), (880, 1060), fill=False, name="teleport")
 
+sensei_main_hub = continuos_animation("sensei_idle", 30, (1200, 480))
+
 
 #level one
 
@@ -763,6 +762,18 @@ bush_level_one = entities((175, 125), (300, 750), images=["bush_level_one.png"],
 level_one_shadow = entities((0, 0), (960, 1080), images=["level_one_shadow.png"], image_size=(1920, 1080))
 
 light_level_one = one_image_animation("images/light_level_one",(60, 60), (1077, 20))
+
+door_level_one = one_image_animation("images/door_level_one", (215, 130), (855, 20))
+
+left_border_wall_level_one = entities((140 ,1080), (0, 0), fill=False)
+
+right_border_wall_level_one = entities((145 ,1080), (1775, 0), fill=False)
+
+top_border_wall_level_one = entities((1920, 70), (0, 0), fill=False)
+
+bottom_border_wall_right_level_one = entities((860, 100), (1060 ,980), fill=False)
+
+bottom_border_wall_left_level_one = entities((850, 100), (0 ,980), fill=False)
 
 level_entities = []
 
@@ -810,35 +821,34 @@ while running:
 
             button_list = [back_button]
 
-        #for event in pygame.event.get():
+
 
         mouse_button_pressed = pygame.mouse.get_pressed()       
 
         if menu_screen == 1:
 
             if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed):
-                button_click()
-                #menu_screen = buttons.button_click((mouse_x, mouse_y), button_play, mouse_button_pressed, 2)
+                play_sound_effect("button_press_1.wav")
+
                 pygame.time.delay(100)
                 menu_screen = 2
-                #print(mouse_x, mouse_y)
+
             elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed):
-                button_click()
+                play_sound_effect("button_press_1.wav")
                 
-                #menu_screen = buttons.button_click((mouse_x, mouse_y), button_options, mouse_button_pressed, 3)
+
                 pygame.time.delay(10)
                 menu_screen = 3
 
             elif buttons.button_function((mouse_x, mouse_y), button_quit, mouse_button_pressed):
-                button_click()
+                play_sound_effect("button_press_1.wav")
                 
                 running = False
             
         elif menu_screen == 2:
 
             if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
-                #menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
-                button_click()
+                play_sound_effect("button_press_1.wav")
                 
                 pygame.time.delay(10)
                 menu_screen = 1
@@ -846,7 +856,7 @@ while running:
                 
             for buttone in [save_1_button, save_2_button, save_3_button, save_4_button]:
                 if buttons.button_function((mouse_x, mouse_y), buttone, mouse_button_pressed):
-                    button_click()
+                    play_sound_effect("button_press_1.wav")
                     
                     pygame.mixer.music.stop()
                     opening_cutscene.preview()
@@ -863,9 +873,8 @@ while running:
         elif menu_screen == 3:
 
             if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
-                #menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
                 menu_screen = 1
-                button_click()
+                play_sound_effect("button_press_1.wav")
             
             if mouse_button_pressed[0]:
                 click_rect = pygame.Rect(950, 450, 80, 100)
@@ -883,7 +892,7 @@ while running:
         background = backgrounds.main_hub
 
         level_entities = [left_border_wall_main_hub, right_border_wall_main_hub, top_border_wall_main_hub, bottom_border_wall_left_main_hub, 
-        bottom_border_wall_right_main_hub, exit_main_hub, the_player, tree_main_hub]
+        bottom_border_wall_right_main_hub, exit_main_hub, the_player, tree_main_hub, sensei_main_hub]
         
         if teleport(exit_main_hub, the_player):
              
@@ -896,10 +905,14 @@ while running:
         background = backgrounds.level_one
         
 
-        level_entities = [track_level_one, light_level_one, the_player, bush_level_one, tree_level_one, box_level_one,  level_one_shadow]
+        level_entities = [track_level_one, light_level_one, the_player, bush_level_one, tree_level_one, box_level_one, door_level_one, level_one_shadow, left_border_wall_level_one,
+                          right_border_wall_level_one, top_border_wall_level_one, bottom_border_wall_left_level_one, bottom_border_wall_right_level_one]
 
         if box_level_one.collision_pos == box_level_one.movable[2][0]:
             light_level_one.change_image()
+            pygame.time.delay(1000)
+            play_sound_effect("door_open_level_one.mp3")
+            door_level_one.change_image()
         
         if "player completes level":
             save_data["level one complete"] = True
@@ -954,9 +967,5 @@ while running:
             except:
                 pass
     
-    #surface = pygame.surface.Surface(button_play.button.get_size())
-    #surface.fill((255, 255, 255))
-    
-    #screen.blit(surface, (button_play.hit[0]- surface.get_size()[0]/2, button_play.hit[1]- surface.get_size()[1]/2))
     the_cheese.animate()
     pygame.display.update()
