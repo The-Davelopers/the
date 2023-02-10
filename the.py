@@ -677,7 +677,10 @@ def background_music():
     
 #*Main variables
 
+
 active_location = "main hub"
+
+
 
 backgrounds = background_load()
 
