@@ -249,7 +249,7 @@ class text_class():
         self.whos_talking_name = ""
         with open("textfile.txt") as file:
             self.lines = file.read().splitlines()
-        self.box_img = pygame.image.load("text_box.png")
+        self.box_img = pygame.image.load("images/text_box.png")
         self.box_x = 350
         self.box_y = 600
         self.font = pygame.font.Font(r"fonts\minkraft.ttf", 30)
@@ -260,7 +260,7 @@ class text_class():
         self.whos_talking_x = self.box_x + 32
         self.whos_talking_y = self.box_y + 10
         self.whos_talking_color = (136, 136, 136)
-        self.enter_img = pygame.image.load("enter.png")
+        self.enter_img = pygame.image.load("images/enter.png")
         self.enter = pygame.transform.scale(self.enter_img, (136.75, 29))
         self.enter_x = self.box_x + 700
         self.enter_y = self.box_y + 125
