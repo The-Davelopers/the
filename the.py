@@ -1,4 +1,4 @@
-import pygame, ctypes, os, pickle
+import pygame, ctypes, os, random
 
 try:
     import moviepy.editor
@@ -7,6 +7,7 @@ except:
     import moviepy.editor
 
 pygame.init()
+pygame.mixer.init()
 
 
 #*screen setup
@@ -249,8 +250,8 @@ class text_class():
         with open("textfile.txt") as file:
             self.lines = file.read().splitlines()
         self.box_img = pygame.image.load("text_box.png")
-        self.box_x = 350
-        self.box_y = 600
+        self.box_x = 550
+        self.box_y = 800
         self.font = pygame.font.Font(r"fonts\minkraft.ttf", 30)
         self.x = self.box_x + 25
         self.y = self.box_y + 50
@@ -259,6 +260,27 @@ class text_class():
         self.whos_talking_x = self.box_x + 32
         self.whos_talking_y = self.box_y + 10
         self.whos_talking_color = (136, 136, 136)
+
+class animate_cheese():
+    def __init__(self) -> None:
+        images = os.listdir("the_cheese_logo")
+
+            
+        for i, image in enumerate(images):
+            images[i] = pygame.image.load(f"the_cheese_logo/{image}")
+
+        self.images = images
+        self.counter = 0
+        self.surface = images[0]
+        self.pos = (665, 100)
+    def animate(self):
+        for i, image in enumerate(self.images):
+            if self.counter > i*60:
+                self.surface = image
+            if self.counter > len(self.images)*60:
+                self.counter = 0
+        self.counter += 10
+        return self.surface, self.counter
 
 
 #*Functions
@@ -613,13 +635,27 @@ def dialogue(first, last):
 def file_saving(file_name, ):
     pass
 
+def button_click():
+    
+
+    click = pygame.mixer.Sound("button_press_1.wav")
+    click.play()
+
+def background_music():
+
+    music = os.listdir("music")
+    
+    song = random.choice(music)
+    
+    pygame.mixer.music.load(f"music/{song}")
+    pygame.mixer.music.play()
+    
+    
 #*Main variables
 
 active_location = "main menu"
 
 backgrounds = background_load()
-
-
 
 background = backgrounds.main_hub
 
@@ -637,8 +673,12 @@ the_player = player_values((50, 100), (300, 300), image="amogus_idle_1.png")
 
 running = True
 
+pygame.mixer.music.set_endevent ( pygame.USEREVENT )
 
 #main menu
+
+
+the_cheese = animate_cheese()
 
 button_play = buttons("button_play.png", (360, 120), (780, 450), (960, 510))
 
@@ -695,13 +735,12 @@ exit_level_one = entities((145, 20), (880, 1060), fill=False, name="teleport")
 
 level_entities = []
 
-
+background_music()
 #*Main Loop
 
 while running:
-    
-    
-    
+
+        
     mouse_x, mouse_y = pygame.mouse.get_pos()
     
     #print(mouse_x, mouse_y)
@@ -709,7 +748,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-             
+        if event.type == pygame.USEREVENT:
+
+            background_music()
     try:
         screen.fill(background)
     except:
@@ -721,9 +762,10 @@ while running:
         background = backgrounds.main_menu
         level_entities = []
         
+        
 
         if menu_screen == 1:
-
+            level_entities = [the_cheese]
             button_list = [button_play, button_options, button_quit]
             
         elif menu_screen == 2:
@@ -742,24 +784,28 @@ while running:
         if menu_screen == 1:
 
             if buttons.button_function((mouse_x, mouse_y), button_play, mouse_button_pressed):
-                
+                button_click()
                 #menu_screen = buttons.button_click((mouse_x, mouse_y), button_play, mouse_button_pressed, 2)
                 pygame.time.delay(100)
                 menu_screen = 2
                 #print(mouse_x, mouse_y)
             elif buttons.button_function((mouse_x, mouse_y), button_options, mouse_button_pressed):
-
+                button_click()
+                
                 #menu_screen = buttons.button_click((mouse_x, mouse_y), button_options, mouse_button_pressed, 3)
                 pygame.time.delay(10)
                 menu_screen = 3
 
             elif buttons.button_function((mouse_x, mouse_y), button_quit, mouse_button_pressed):
+                button_click()
+                
                 running = False
             
         elif menu_screen == 2:
 
             if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
                 #menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
+                button_click()
                 
                 pygame.time.delay(10)
                 menu_screen = 1
@@ -767,13 +813,16 @@ while running:
                 
             for buttone in [save_1_button, save_2_button, save_3_button, save_4_button]:
                 if buttons.button_function((mouse_x, mouse_y), buttone, mouse_button_pressed):
+                    button_click()
+                    
+                    pygame.mixer.music.stop()
                     opening_cutscene.preview()
                     opening_cutscene.close()
                     screen.fill((0, 0, 0))
                     pygame.display.update()
                     pygame.time.delay(1000)
-                    fade_in_out(screen, backgrounds.main_hub,[the_player, tree_main_hub], fade_type="in")
-                    #
+                    fade_in_out(screen, backgrounds.main_hub, [the_player, tree_main_hub], fade_type="in")
+                    background_music()
                     
                     active_location = "main hub"
                     
@@ -783,6 +832,14 @@ while running:
             if buttons.button_function((mouse_x, mouse_y), back_button, mouse_button_pressed):
                 #menu_screen = buttons.button_click((mouse_x, mouse_y), back_button, mouse_button_pressed, 1)
                 menu_screen = 1
+                button_click()
+            
+            if mouse_button_pressed[0]:
+                click_rect = pygame.Rect(950, 450, 80, 100)
+                if click_rect.collidepoint((mouse_x, mouse_y)):
+                    pygame.mixer.music.load("among_us.mp3")
+                    pygame.mixer.music.play()
+                
         if active_location == "main menu":
             for button in button_list:
                 screen.blit(button.button, button.pos)
@@ -864,5 +921,5 @@ while running:
     #surface.fill((255, 255, 255))
     
     #screen.blit(surface, (button_play.hit[0]- surface.get_size()[0]/2, button_play.hit[1]- surface.get_size()[1]/2))
-    
+    the_cheese.animate()
     pygame.display.update()
