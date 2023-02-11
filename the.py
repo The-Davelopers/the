@@ -746,7 +746,7 @@ def background_music():
     
 #*Main variables
 
-active_location = "level one"
+active_location = "main menu"
 
 backgrounds = background_load()
 
