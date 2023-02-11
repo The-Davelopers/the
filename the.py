@@ -96,7 +96,7 @@ class entities():
       
         self.size = size
         
-        self.collision_pos = (position[0], position[1])
+        self.collision_pos = position
         
         self.collision = pygame.surface.Surface(size)
         
@@ -264,6 +264,12 @@ class background_load():
             self.level_five = pygame.transform.scale(level_five, (screensize))
         except:
             self.level_five = (0, 128, 0)
+        
+        try:
+            win_screen = pygame.image.load("images/win_screen.png").convert()
+            self.win_screen = pygame.transform.scale(win_screen, (screensize))
+        except:
+            self.win_screen = (0, 128, 0)
 
 class text_class():
     def __init__(self):
@@ -340,7 +346,23 @@ class one_image_animation():
     def change_image(self):
         self.surface = self.images[1]
         return self.surface
-    
+
+class button_prompt():
+    def __init__(self, size, position) -> None:
+        
+        self.size = size
+        
+        self.pos = position
+        
+
+        
+    def show_prompt(self, player):
+        entity_hitbox = pygame.rect.Rect(self.pos, self.size)
+
+        player_hitbox = pygame.rect.Rect(player.pos, player.size)
+        
+        return entity_hitbox.colliderect(player_hitbox)
+
 
 #*Functions
 
@@ -413,6 +435,8 @@ def player_movement(direction, player_entity, other_entities):
         if entity.name == "player":
             pass
         elif entity.name == "teleport":
+            pass
+        elif entity.size == (0, 0):
             pass
         else:
             directions = ""
@@ -804,7 +828,9 @@ tree_level_one = entities((110, 25), (290, 475), images=["tree_level_one.png"], 
 
 bush_level_one = entities((175, 125), (300, 750), images=["bush_level_one.png"], image_size=(160, 160))
 
-#exit_level_one = entities((145, 20), (880, 1060), fill=False, name="teleport")
+cheese_level_one = entities((0, 0), (960, 100), images=["cheese_level_one.png"], image_size=(60, 60), name="teleport")
+
+cheese_level_one_hitbox = entities((190, 30), (870, 70), fill=False, name="teleport")
 
 level_one_shadow = entities((0, 0), (960, 1080), images=["level_one_shadow.png"], image_size=(1920, 1080))
 
@@ -951,8 +977,8 @@ while running:
         background = backgrounds.level_one
         
 
-        level_entities = [track_level_one, light_level_one, the_player, bush_level_one, tree_level_one, box_level_one, door_level_one, level_one_shadow, left_border_wall_level_one,
-                          right_border_wall_level_one, top_border_wall_level_one, bottom_border_wall_left_level_one, bottom_border_wall_right_level_one]
+        level_entities = [track_level_one, light_level_one, cheese_level_one, door_level_one, the_player, bush_level_one, tree_level_one, box_level_one, level_one_shadow, left_border_wall_level_one,
+                          right_border_wall_level_one, top_border_wall_level_one, bottom_border_wall_left_level_one, bottom_border_wall_right_level_one, cheese_level_one_hitbox]
 
         if box_level_one.collision_pos == box_level_one.movable[2][0]:
             if door_level_one.surface != door_level_one.images[1]:
@@ -960,9 +986,25 @@ while running:
                 pygame.time.delay(1000)
                 play_sound_effect("door_open_level_one.mp3")
                 door_level_one.change_image()
+
+            else:
+
+                
+                if teleport(cheese_level_one_hitbox, the_player):
+                    
+                    pygame.mixer.music.stop()
+
+                    save_data["level one complete"] = True
+                    screen.blit(backgrounds.win_screen, (0, 0))
+                    
+                    pygame.display.update()
+                    play_sound_effect("win_theme.mp3")
+                    
+                    pygame.time.delay(7000)
+                    active_location = "main menu"
+                    
+                        
         
-        if "player completes level":
-            save_data["level one complete"] = True
     
     if active_location == "level two":
         background = backgrounds.level_two
@@ -987,7 +1029,7 @@ while running:
     
         if "player completes level":
             save_data["level five complete"] = True
-    
+
 
     keys = pygame.key.get_pressed()
         
