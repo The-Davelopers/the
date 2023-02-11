@@ -23,9 +23,10 @@ scale = (screensize[0]/1920, screensize[1]/1080)
 #*Classes
 
 class player_values():
-    def __init__(self, size, position,color=(255, 255, 255), image=None, speed=2):
+    def __init__(self, size, position,color=(255, 255, 255), image=None, speed=4):
         #scaling
         
+        self.counter = 0
         
         self.name = "player"
         
@@ -36,21 +37,50 @@ class player_values():
         self.size = size
         self.speed = speed
         
-        try:
-            surface = pygame.image.load(f"images/{image}").convert_alpha()
-            self.surface = pygame.transform.scale(surface, size)
-        except:
-            self.surface = pygame.surface.Surface(size)
-            self.surface.fill(color)
+        self.direction = "left"
+        
+        self.left = [pygame.transform.scale(pygame.image.load(f"images/player/player_walk_left/{image}").convert_alpha(), size) for image in os.listdir("images/player/player_walk_left")]
+        
+        self.right = [pygame.transform.scale(pygame.image.load(f"images/player/player_walk_right/{image}").convert_alpha(), size) for image in os.listdir("images/player/player_walk_right")]
+        
+        self.up = [pygame.transform.scale(pygame.image.load(f"images/player/player_walk_up/{image}").convert_alpha(), size) for image in os.listdir("images/player/player_walk_up")]
+        
+        self.down = [pygame.transform.scale(pygame.image.load(f"images/player/player_walk_down/{image}").convert_alpha(), size) for image in os.listdir("images/player/player_walk_down")]
+        
+
+        self.surface = self.left[0]
         
     def animate(self):
-        for i, image in enumerate(self.images):
+        
+        if self.direction == "left":
+            images = self.left
+        elif self.direction == "right":
+            images = self.right
+        elif self.direction == "up":
+            images = self.up
+        elif self.direction == "down":
+            images = self.down
+        
+        for i, image in enumerate(images):
             if self.counter > i*60:
                 self.surface = image
-            if self.counter > len(self.images)*60:
+            if self.counter > len(images)*60:
                 self.counter = 0
         self.counter += self.speed
         return self.surface, self.counter
+
+    def idle(self):
+        if self.direction == "left":
+            images = self.left[0]
+        elif self.direction == "right":
+            images = self.right[0]
+        elif self.direction == "up":
+            images = self.up[0]
+        elif self.direction == "down":
+            images = self.down[0]
+        
+        self.surface = images
+        return self.surface
            
 class entities():
     def __init__(self, size, position, color=(255, 255, 255), images=None, image_size=None, fill=True, name="entity", movable=[False]):
@@ -312,7 +342,6 @@ class one_image_animation():
         return self.surface
     
 
-
 #*Functions
 
 text = text_class()
@@ -359,16 +388,20 @@ def player_movement(direction, player_entity, other_entities):
     
     if "left" in direction:
         x_change = -1
+        player_entity.direction = "left"
         
     if "right" in direction:
         x_change = 1
-    
+        player_entity.direction = "right"
+        
     if "up" in direction:
         y_change = -1
-    
+        player_entity.direction = "up"
+        
     if "down" in direction:
         y_change = 1
-        
+        player_entity.direction = "down"
+
     x, y = player_entity.pos
 
     player_size = player_entity.size
@@ -494,7 +527,7 @@ def player_movement(direction, player_entity, other_entities):
             
     x += 2*x_change 
     y += 2*y_change
-    
+    player_entity.animate()
     player_entity.pos = (x, y)
     
     return player_entity, level_entities    
@@ -689,10 +722,7 @@ def background_music():
     
 #*Main variables
 
-
-active_location = "main hub"
-
-
+active_location = "level one"
 
 backgrounds = background_load()
 
@@ -714,8 +744,8 @@ running = True
 
 pygame.mixer.music.set_endevent ( pygame.USEREVENT )
 
-#main menu
 
+#main menu
 
 the_cheese = continuos_animation("the_cheese_logo", 10, (665, 100), (600, 338))
 
@@ -763,6 +793,7 @@ sensei_main_hub = continuos_animation("sensei_idle", 2, (1070, 450), (120, 120))
 
 sensei_main_hub_hitbox = entities((100, 100), (1070, 470), fill=False)
 
+
 #level one
 
 box_level_one = entities((200, 150), (1400, 300), images=["box_level_one.png"], image_size=(200, 200), movable=[True, ["down"], [(1400, 750), (1400, 300)]])
@@ -803,7 +834,6 @@ while running:
         
     mouse_x, mouse_y = pygame.mouse.get_pos()
     
-    #print(mouse_x, mouse_y)
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -817,7 +847,6 @@ while running:
         screen.blit(background, (0, 0))
         
         
-
     if active_location == "main menu":
         background = backgrounds.main_menu
         level_entities = []
@@ -962,19 +991,21 @@ while running:
 
     keys = pygame.key.get_pressed()
         
-        
+    the_player.idle()
+    
+    if keys[pygame.K_w]:
+        the_player, level_entities = player_movement("up", the_player, level_entities)    
+    
+    if keys[pygame.K_s]:
+        the_player, level_entities = player_movement("down", the_player, level_entities)    
+    
     if keys[pygame.K_a]:
         the_player, level_entities = player_movement("left", the_player, level_entities)
     
     if keys[pygame.K_d]:
         the_player, level_entities = player_movement("right", the_player, level_entities)    
 
-    if keys[pygame.K_w]:
-        the_player, level_entities = player_movement("up", the_player, level_entities)    
     
-    if keys[pygame.K_s]:
-        the_player, level_entities = player_movement("down", the_player, level_entities)    
-        
     for entity in level_entities:
         screen.blit(entity.surface, entity.pos)
     
