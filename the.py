@@ -39,6 +39,8 @@ class player_values():
         
         self.direction = "left"
         
+        #spelarens animering.
+        
         self.left = [pygame.transform.scale(pygame.image.load(f"images/player/player_walk_left/{image}").convert_alpha(), size) for image in os.listdir("images/player/player_walk_left")]
         
         self.right = [pygame.transform.scale(pygame.image.load(f"images/player/player_walk_right/{image}").convert_alpha(), size) for image in os.listdir("images/player/player_walk_right")]
@@ -106,13 +108,16 @@ class entities():
             image_size = (image_size[0], image_size[1])
         except:    
             image_size = size
+            
         self.image_size = image_size    
+        
         try:
             self.pos = (self.collision_pos[0] + size[0]/2 - image_size[0]/2, self.collision_pos[1] + size[1] - image_size[1])
         except:
             self.pos = self.collision_pos
         try:
             for image in images:
+                #ändrar surfacen till en vit rektangel om bilden inte laddar in.
                 surface = pygame.image.load(f"images/{image}").convert_alpha()
                 try:
                     surface = pygame.transform.scale(surface, image_size)
@@ -122,18 +127,20 @@ class entities():
                 self.surfaces.append(surface)
         except:
             surface = pygame.surface.Surface(size)
+            
             if fill:
                 surface.fill(color)
             else:
                 surface = surface.convert_alpha()
                 surface.fill((0, 0, 0, 0))
+                
             self.surfaces.append(surface)
             
         self.surface = self.surfaces[0]
         
             
     def image_anchoring(entity):
-        #setting an anchor point for the image to the collision box
+        #synkronierar bilden till sin hitbox
         
         image_position = (entity.collision_pos[0] + entity.size[0]/2 - entity.image_size[0]/2, entity.collision_pos[1] + entity.size[1] - entity.image_size[1])
         
@@ -219,7 +226,9 @@ class animator(pygame.sprite.Sprite):
 
 class background_load():
     def __init__(self):
-        
+
+        """laddar in alla bilder som ska användas som bakgrund i spelet"""
+                
         self.size = screensize
         
         try:
@@ -324,6 +333,7 @@ class continuos_animation():
         self.pos = position
         
     def animate(self):
+        #ändrar bild varje 60 loop. 
         for i, image in enumerate(self.images):
             if self.counter > i*60:
                 self.surface = image
