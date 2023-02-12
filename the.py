@@ -1002,9 +1002,9 @@ while running:
                     
                     pygame.time.delay(7000)
                     active_location = "main menu"
+                    menu_screen = 1
                     
-                        
-        
+                             
     
     if active_location == "level two":
         background = backgrounds.level_two
