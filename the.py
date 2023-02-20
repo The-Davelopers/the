@@ -4,7 +4,8 @@ try:
     import moviepy.editor
 except:
     os.system("pip install moviepy")
-    import moviepy.editor
+    os.system("py the.py")
+    pygame.quit()
 
 pygame.init()
 pygame.mixer.init()
@@ -1011,8 +1012,11 @@ while running:
                     play_sound_effect("win_theme.mp3")
                     
                     pygame.time.delay(7000)
+                    opening_cutscene = moviepy.editor.VideoFileClip("images/opening_cutscene.mp4")
+                    the_player.pos = (1200, 480)
                     active_location = "main menu"
                     menu_screen = 1
+                    
                     
                              
     
